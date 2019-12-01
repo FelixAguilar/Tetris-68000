@@ -1,8 +1,6 @@
 ; =============================================================================
-; TITLE    : TETRIS 68000
-; AUTHOR   : FELIX AGUILAR FERRER, 
-;            ADRIAN BENNASAR POLZIN, 
-;            ALVARO BUENO LOPEZ
+; TITLE    : TETRIS GAME
+; AUTHOR   : FELIX AGUILAR FERRER
 ; CREATION :
 ; =============================================================================
 
@@ -12,21 +10,26 @@
 
             INCLUDE "SYSCONST.X68"          ; SYSTEM CONSTANTS
             INCLUDE "SYSTEM.X68"            ; SYSTEM CODE
-            INCLUDE "GRAPHICS.X68"          ; INTERFACE
-            ; TO DO: PUT YOUR GAME-RELATED INCLUDES HERE
-
+            INCLUDE "CONST.X68"             ; GAME CONSTANTS
+            INCLUDE "INIT.X68"              ; GAME INICIALIZATION
+            INCLUDE "GRAPHICS.X68"          ; GAME GRAPHICS
+            INCLUDE "STATES.X68"            ; GAME STATES
+            INCLUDE "FIGURES/SQUARE.X68"    ; FIGURE SQUARE
+            
 ; --- INITIALIZE --------------------------------------------------------------
 
 START       JSR     SYSINIT
-            ; TO DO: CALL GAME INITIALIZATION CODE HERE
-
+            JSR     STAINIT                 ; INITIALIZE STATES
+            
 ; --- UPDATE ------------------------------------------------------------------
 
 .LOOP       TRAP    #KBDTRAP                ; READ KEYBOARD
-            ; TO DO: CALL GAME UPDATE CODE HERE
-            MOVE.L  #$0,D1
-            JSR     FIGURE
-
+            MOVE.L  NSTATE,A1
+            JSR     (A1)                    ; JUMPS TO NEXT STATE
+            MOVE.L  #100,D1
+            MOVE.B  #23,D0
+            TRAP    #15
+            
 ; --- WAIT SYNCH --------------------------------------------------------------
 
 .WINT       TST.B   (SCRINTCT)              ; WAIT FOR INTERRUPT
@@ -35,8 +38,8 @@ START       JSR     SYSINIT
 
 ; --- PLOT --------------------------------------------------------------------
 
-            ; TO DO: CALL GAME PLOT CODE HERE
-            
+            MOVE.L  DSTATE,A1
+            JSR     (A1)                    ; DRAWS THE CURRENT PLOT STATE         
             TRAP    #SCRTRAP                ; SHOW GRAPHICS
             BRA     .LOOP
             SIMHALT
@@ -45,7 +48,17 @@ START       JSR     SYSINIT
 
             INCLUDE "SYSVAR.X68"
             INCLUDE "VAR.X68"
+            
             END    START
+
+
+
+
+
+
+
+
+
 
 
 

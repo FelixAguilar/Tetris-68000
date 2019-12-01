@@ -1,7 +1,7 @@
 ; =============================================================================
 ; SYSTEM MANAGEMENT (SYSTEM CODE)
 ; =============================================================================
-
+; Felix Aguilar Ferrer, Adrian Bennasar Polzin, Alvaro Bueno Lopez
 ; -----------------------------------------------------------------------------
 SYSINIT
 ; INITIALIZES THE SYSTEM
@@ -294,6 +294,8 @@ DMMFREE
             CLR.W   (A0)
             MOVEM.L (A7)+,D0/A0
             RTS
+
+
 
 
 
