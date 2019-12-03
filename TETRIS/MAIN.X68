@@ -14,7 +14,7 @@
             INCLUDE "GAME/INIT.X68"         ; GAME INICIALIZATION
             INCLUDE "GAME/GRAPHICS.X68"     ; GAME GRAPHICS
             INCLUDE "GAME/STATES.X68"       ; GAME STATES
-            INCLUDE "GAME/STATUS.X68"       ; GAME CHECKING CODE
+            INCLUDE "GAME/GAME.X68"         ; GAME CODE
             INCLUDE "FIGURES/FIGURE.X68"    ; FIGURE CODE
             INCLUDE "FIGURES/SQUARE.X68"    ; FIGURE SQUARE
             
@@ -49,6 +49,7 @@ START       JSR     SYSINIT
             INCLUDE "GAME/VAR.X68"
             
             END    START
+
 
 
 

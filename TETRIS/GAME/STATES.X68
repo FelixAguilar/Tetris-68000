@@ -39,6 +39,7 @@ STANWGM
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
             
+            MOVEM.L D0-D3,-(A7)
             JSR     INITMATRIX              ; CLEAR THE MATRIX
             CLR.B   FIGROTA                 ; DEFAULT ROTATION
             CLR.B   FIGPOSI                 ; DEFAULT POSITION
@@ -48,6 +49,23 @@ STANWGM
             MOVE.L  3*4(A0),NSTATE          ; NSTATE = STAUPDA
             MOVE.L  5*4(A0),DSTATE          ; DSTATE = STADWGM
             
+            ; - DISABLE INTS (SET INT BITS IN SR TO 111)
+            ;ORI.W   #$0700,SR
+
+            MOVE.L  #ISRMOVEDOWN,($60+ISRDOWN*4)
+            
+            MOVE.B  #32,D0                  ; INT temporizada
+            MOVE.B  #6,D1                   ; Set Auto INT temporizada.
+            MOVE.B  #$80|ISRDOWN,D2     ; Habilitar temporizada, ISR 1.
+            MOVE.L  #1000,D3                ; Tiempo entre ejecuciones.
+            TRAP    #15 
+
+
+
+            ; - ENABLE INTS (SET INT BITS IN SR TO 000)
+            ;ANDI.W  #$F8FF,SR
+            
+            MOVEM.L (A7)+,D0-D3
             JSR     INITFIGURE
             
             RTS
@@ -65,15 +83,21 @@ STAUPDA
             JSR     ISGAMEOVER
             BTST.B  #0,GAMEOVER              ; IF NOT SKIP
             BNE     .SKIP4
+            JSR     ISTETRIS
             JSR     INITFIGURE              ; INTRODUCES NEXT FIGURE
-.SKIP1      BTST.B  #0,KBDVAL
-            BNE     .SKIP2
+.SKIP1      BTST.B  #0,KBDEDGE
+            BEQ     .SKIP2
             JSR     LEFTFIGURE
-.SKIP2      BTST.B  #2,KBDVAL
-            BNE     .SKIP3
+            
+.SKIP2      BTST.B  #2,KBDEDGE
+            BEQ     .SKIP3
             JSR     RIGHTFIGURE
-.SKIP3      JSR     DOWNFIGURE              ; MOVE THE FIGURE DOWNWARDS
+
+.SKIP3      BTST.B  #3,KBDVAL
+            BEQ     .END
+            JSR     DOWNFIGURE
             BRA     .END
+
 .SKIP4      LEA.L   STATES,A0               ; A0 = STATES LIST
             MOVE.L  4*4(A0),NSTATE          ; NSTATE = STAGMOV
 .END        RTS
@@ -168,6 +192,11 @@ STADWGO            MOVEM.L D1-D2/A0,-(A7)
             
 .TEXT1      DC.B    'GAME OVER',0
 .TEXT2      DC.B    'PRESS "SPACE" TO START THE GAME',0     
+
+
+
+
+
 
 
 
