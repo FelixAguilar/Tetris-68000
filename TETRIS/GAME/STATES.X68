@@ -113,6 +113,12 @@ STAGMOV
             LEA.L   STATES,A0               ; A0 = STATES LIST
             MOVE.L  7*4(A0),DSTATE          ; DSTATE = STADWGO
             
+            ;falta deshabilitar isr y luego habilitarlas
+            
+            MOVE.B  #32,D0                  ; INT temporizada
+            MOVE.B  #6,D1                   ; Set Auto INT temporizada.
+            MOVE.B  #$00|ISRDOWN,D2         ; Habilitar temporizada, ISR 1.
+            TRAP    #15 
             
             RTS
             
@@ -192,6 +198,7 @@ STADWGO            MOVEM.L D1-D2/A0,-(A7)
             
 .TEXT1      DC.B    'GAME OVER',0
 .TEXT2      DC.B    'PRESS "SPACE" TO START THE GAME',0     
+
 
 
 
