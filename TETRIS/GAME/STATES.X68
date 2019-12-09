@@ -1,5 +1,5 @@
 ; =============================================================================
-; GRAPHICS
+; STATES
 ; =============================================================================
 
 ; ----------------------------------------------------------------------------
@@ -11,8 +11,7 @@ STAINIT
 ; -----------------------------------------------------------------------------
             
             LEA.L   STATES,A0               ; A0 = STATES LIST
-            CLR.L   DSTATE
-            MOVE.L  1*4(A0),NSTATE          ; NSTATE = STANMME
+            MOVE.L  1*4(A0),STATE          ; STATE = STANMME
             RTS
             
 ; -----------------------------------------------------------------------------
@@ -23,12 +22,12 @@ STANMME
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
             
-            LEA.L   STATES,A0               ; A0 = STATES LIST
-            MOVE.L  6*4(A0),DSTATE          ; DSTATE = STADWMM
+            JSR     DRAWMENU                ; DRAWS THE MENU PLOT
             
             BTST.B  #4,KBDEDGE              ; IF "SPACE" IS PRESED
             BEQ     .END
-            MOVE.L  2*4(A0),NSTATE          ; UPDATES NEXT STATE
+            LEA.L   STATES,A0               ; A0 = STATES LIST
+            MOVE.L  2*4(A0),STATE           ; UPDATES NEXT STATE    
 .END        RTS
 
 ; -----------------------------------------------------------------------------
@@ -46,61 +45,81 @@ STANWGM
             CLR.B   GAMEOVER                ; DEFAULT GAMEOVER STATUS
             
             LEA.L   STATES,A0               ; A0 = STATES LIST
-            MOVE.L  3*4(A0),NSTATE          ; NSTATE = STAUPDA
-            MOVE.L  5*4(A0),DSTATE          ; DSTATE = STADWGM
+            MOVE.L  3*4(A0),STATE          ; STATE = STAUPDA
             
-            ; - DISABLE INTS (SET INT BITS IN SR TO 111)
-            ;ORI.W   #$0700,SR
-
-            MOVE.L  #ISRMOVEDOWN,($60+ISRDOWN*4)
-            
-            MOVE.B  #32,D0                  ; INT temporizada
-            MOVE.B  #6,D1                   ; Set Auto INT temporizada.
-            MOVE.B  #$80|ISRDOWN,D2     ; Habilitar temporizada, ISR 1.
-            MOVE.L  #1000,D3                ; Tiempo entre ejecuciones.
-            TRAP    #15 
-
-
-
-            ; - ENABLE INTS (SET INT BITS IN SR TO 000)
-            ;ANDI.W  #$F8FF,SR
-            
-            MOVEM.L (A7)+,D0-D3
             JSR     INITFIGURE
-            
+
+            MOVEM.L (A7)+,D0-D3
             RTS
 
 ; -----------------------------------------------------------------------------
 STAUPDA
 ; OPERATIONS FOR THE GAME WHEN IT IS RUNNING
-; INPUT    - NONE
+; INPUT    - KBDVAL, KBDEDGE
 ; OUTPUT   - NONE
-; MODIFIES - NONE
+; MODIFIES - MATRIX
 ; -----------------------------------------------------------------------------
             
-            BTST.B  #0,FIGLDOW              ; IF NOT SKIP
-            BEQ     .SKIP1
+            JSR     DRAWGAME                ; DRAWS THE GAME PLOT
+            
+            MOVE.L  D0,-(A7)
+            
+            ; CHECKS IF THE FIGURE CAN BE MOVED DOWNWARDS IF TRUE THEN KEYS
+            BTST.B  #0,FIGLDOW                        
+            BEQ     .LEFT
+       
+            ; CHECK IF IT IS GAME OVER
             JSR     ISGAMEOVER
-            BTST.B  #0,GAMEOVER              ; IF NOT SKIP
-            BNE     .SKIP4
+            BTST.B  #0,GAMEOVER
+            BNE     .GAMEOVER
+            
+            ; CHECK IF IT IS TETRIS AND CLEARS IT
             JSR     ISTETRIS
-            JSR     INITFIGURE              ; INTRODUCES NEXT FIGURE
-.SKIP1      BTST.B  #0,KBDEDGE
-            BEQ     .SKIP2
+            
+            ; CREATES A NEW FIGURE
+            JSR     INITFIGURE
+            
+            ; ACTIONS IF ANY KEY IS PRESED (LEFT, RIGHT, DOWN, UP, SPACE)
+.LEFT       BTST.B  #0,KBDEDGE
+            BEQ     .RIGHT
             JSR     LEFTFIGURE
             
-.SKIP2      BTST.B  #2,KBDEDGE
-            BEQ     .SKIP3
+.RIGHT      BTST.B  #2,KBDEDGE
+            BEQ     .DOWN
             JSR     RIGHTFIGURE
 
-.SKIP3      BTST.B  #3,KBDVAL
-            BEQ     .END
+.DOWN       BTST.B  #3,KBDVAL
+            BEQ     .UP
+            JSR     DOWNFIGURE
+
+.UP         BTST.B  #1,KBDVAL
+            BEQ     .SPACE
+            JSR     ROTATEFIGURE           
+            
+            
+.SPACE      BTST.B #4,KBDEDGE
+            BEQ     .TEMPMOVE
+            JSR     DOWNFIGURE
+            BTST.B  #0,FIGLDOW                        
+            BEQ     .SPACE
+            
+            ; MOVE FIGURE DOWN EACH 50 SEC APROX
+            
+.TEMPMOVE   MOVE.B  SCRCYCCT,D0
+            ANDI.B  #%00011111,D0
+            BNE     .END
             JSR     DOWNFIGURE
             BRA     .END
 
-.SKIP4      LEA.L   STATES,A0               ; A0 = STATES LIST
-            MOVE.L  4*4(A0),NSTATE          ; NSTATE = STAGMOV
-.END        RTS
+            ; IF IS A GAME OVER CHANGE STATE
+            
+.GAMEOVER   MOVE.L  A0,-(A7)
+            LEA.L   STATES,A0
+            MOVE.L  4*4(A0),STATE
+            MOVE.L  (A7)+,A0
+
+.END        MOVE.L  (A7)+,D0
+            RTS
             
 ; -----------------------------------------------------------------------------
 STAGMOV
@@ -110,124 +129,9 @@ STAGMOV
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
             
-            LEA.L   STATES,A0               ; A0 = STATES LIST
-            MOVE.L  7*4(A0),DSTATE          ; DSTATE = STADWGO
-            
-            ;falta deshabilitar isr y luego habilitarlas
-            
-            MOVE.B  #32,D0                  ; INT temporizada
-            MOVE.B  #6,D1                   ; Set Auto INT temporizada.
-            MOVE.B  #$00|ISRDOWN,D2         ; Habilitar temporizada, ISR 1.
-            TRAP    #15 
+            JSR     DRAWGAMEOVER            ; DRAWS THE GAME OVER PLOT
             
             RTS
-            
-; -----------------------------------------------------------------------------
-STADWGM
-; PRINTS THE PLOT FOR THE GAME SCREEN
-; INPUT    - NONE
-; OUTPUT   - NONE
-; MODIFIES - NONE
-; -----------------------------------------------------------------------------
-            MOVEM.L D0-D4,-(A7)
-            
-            MOVE.L  #$00FFFFFF,D1
-            JSR     CHPENCL
-            
-            MOVE.W  #XMATRIX-5,D1
-            MOVE.W  #YMATRIX-5,D2
-            MOVE.W  D1,D3
-            ADD.W   #MCOLUMN*SIDELENGTH+10,D3
-            MOVE.W  D2,D4
-            ADD.W   #(MROW-4)*SIDELENGTH+10,D4
-            MOVE.B  #90,D0
-            TRAP    #15
-            JSR DRAWMATRIX
-            
-            MOVEM.L (A7)+,D0-D4
-            RTS
-            
-; -----------------------------------------------------------------------------
-STADWMM
-; PRINTS THE PLOT FOR THE MAIN MANU SCREEN
-; INPUT    - NONE
-; OUTPUT   - NONE
-; MODIFIES - NONE
-; -----------------------------------------------------------------------------
-            
-            MOVEM.L D1-D2/A0,-(A7)
-            
-            MOVE.B  #125,D1
-            MOVE.B  #64,D2
-            JSR     SETCURSOR
-            LEA     .TEXT1,A0
-            JSR     DRAWTEXT
-            MOVE.B  #140,D1
-            MOVE.B  #64,D2 
-            JSR     SETCURSOR
-            LEA     .TEXT2,A0
-            JSR     DRAWTEXT 
-
-            MOVEM.L (A7)+,D1-D2/A0       
-            RTS
-            
-.TEXT1      DC.B    'TETRIS',0
-.TEXT2      DC.B    'PRESS "SPACE" TO START THE GAME',0
-; -----------------------------------------------------------------------------
-;STADWGO
-; PRINTS THE PLOT FOR THE GAME OVER SCREEN
-; INPUT    - NONE
-; OUTPUT   - NONE
-; MODIFIES - NONE
-; -----------------------------------------------------------------------------
-STADWGO            MOVEM.L D1-D2/A0,-(A7)
-            
-            MOVE.B  #125,D1
-            MOVE.B  #64,D2
-            JSR     SETCURSOR
-            LEA     .TEXT1,A0
-            JSR     DRAWTEXT
-            MOVE.B  #140,D1
-            MOVE.B  #64,D2 
-            JSR     SETCURSOR
-            LEA     .TEXT2,A0
-            JSR     DRAWTEXT 
-
-            MOVEM.L (A7)+,D1-D2/A0       
-            RTS
-            
-.TEXT1      DC.B    'GAME OVER',0
-.TEXT2      DC.B    'PRESS "SPACE" TO START THE GAME',0     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

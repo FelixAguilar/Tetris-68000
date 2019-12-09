@@ -13,21 +13,24 @@ STATES      DC.L    STAINIT                 ; INITALIZE STATE   0
             DC.L    STANWGM                 ; NEW GAME STATE    2     
             DC.L    STAUPDA                 ; GAME UPDATE STATE 3
             DC.L    STAGMOV                 ; GAME OVER STATE   4
-            DC.L    STADWGM                 ; DRAW GAME         5
-            DC.L    STADWMM                 ; DRAW MAIN MENU    6
-            DC.L    STADWGO                 ; DRAW GAME OVER    7
             
-NSTATE      DS.L    1                       ; NEXT STATE
-DSTATE      DS.L    1                       ; DRAW STATE
+STATE       DS.L    1                       ; ACTIVE STATE
 
 ; --- FIGURE RELATED VARIABLES ------------------------------------------------
 
 FIGTYPE     DS.B    1                       ; CURRENT FIGURE
 FIGROTA     DS.B    1                       ; CURRENT ROTATION
-FIGPOSI     DS.B    1                       ; CURRENT POSITION CELL
+FIGPOSI     DS.B    1                       ; CURRENT POSITION
 FIGLDOW     DS.B    1                       ; 1 IF CAN NOT GO DOWN
 FIGLRIG     DS.B    1                       ; 1 IF CAN NOT GO RIGHT
 FIGLLEF     DS.B    1                       ; 1 IF CAN NOT GO LEFT
+
+; --- TETROMINO T RELATED VARIABLES -------------------------------------------
+
+TROT        DC.B    -10,-1,+1
+            DC.B    -1,+1,+10
+            DC.B    -1,+1,+10
+            DC.B    -10,-1,+10
 
 ; --- MATRIX RELATED VARIABLES ------------------------------------------------
 
@@ -61,38 +64,13 @@ ROW19       DS.B    MCOLUMN
 ACOLOR      DS.B    1
             DS.W    0
             
-COLOR       DC.L    $0000FFFF              ; CIAN 
-            DC.L    $000004FF              ; BLUE
-            DC.L    $00FF8C00              ; ORANGE
-            DC.L    $00FFFB00              ; YELLOW
-            DC.L    $0000FF1A              ; GREEN
-            DC.L    $009500FF              ; PURPLE
-            DC.L    $00FF0000              ; RED
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+COLOR       DC.L    $00FFFF00              ; CIAN 
+            DC.L    $00FF0400              ; BLUE
+            DC.L    $00008CFF              ; ORANGE
+            DC.L    $0000FBFF              ; YELLOW
+            DC.L    $001AFF00              ; GREEN
+            DC.L    $00FF0095              ; PURPLE
+            DC.L    $000000FF              ; RED
 
 *~Font name~Courier New~
 *~Font size~10~

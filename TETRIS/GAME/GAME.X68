@@ -2,6 +2,12 @@
 ; STATUS
 ; =============================================================================
 
+; --- CODE INCLUDES -----------------------------------------------------------
+
+            INCLUDE "GAME/CONST.X68"        ; CONSTANTS
+            INCLUDE "GAME/INIT.X68"         ; GAME INIT
+            INCLUDE "GAME/STATES.X68"       ; GAME STATES
+
 ; -----------------------------------------------------------------------------
 ISGAMEOVER
 ; CHECKS IF THERE IS A GAME OVER
@@ -103,6 +109,8 @@ ISTETRIS
                        
 .EXIT       MOVEM.L (A7)+,D0-D4/A0
             RTS
+
+
 
 
 

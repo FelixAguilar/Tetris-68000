@@ -2,6 +2,11 @@
 ; FIGURE
 ; =============================================================================
 
+; --- CODE INCLUDES -----------------------------------------------------------
+
+            INCLUDE "FIGURES/O.X68"   ; TETROMINO O
+            INCLUDE "FIGURES/T.X68"   ; TETROMINO T
+
 ; -----------------------------------------------------------------------------
 INITFIGURE
 ; ADDS A NEW FIGURE IN THE HIDEN ZONE OF THE MATRIX
@@ -10,7 +15,7 @@ INITFIGURE
 ; MODIFIES - MATRIX
 ; -----------------------------------------------------------------------------
             
-            MOVEM.L A0,-(A7)
+            MOVEM.L D0/A0,-(A7)
 
             CLR.B   FIGLDOW
             CLR.B   FIGLRIG
@@ -27,7 +32,7 @@ INITFIGURE
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.DATA       DC.L    INITSQUARE
+.DATA       DC.L    INITO, INITT
             
 ; -----------------------------------------------------------------------------
 LEFTFIGURE
@@ -51,7 +56,7 @@ LEFTFIGURE
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.DATA       DC.L    LEFTSQUARE
+.DATA       DC.L    LEFTO, LEFTT
             
 ; -----------------------------------------------------------------------------
 RIGHTFIGURE
@@ -74,7 +79,7 @@ RIGHTFIGURE
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.DATA       DC.L    RIGHTSQUARE
+.DATA       DC.L    RIGHTO, RIGHTT
             
 ; -----------------------------------------------------------------------------
 ROTATEFIGURE
@@ -97,7 +102,7 @@ ROTATEFIGURE
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.DATA       DC.L    ROTATESQUARE
+.DATA       DC.L    ROTATEO, ROTATET
             
 ; -----------------------------------------------------------------------------
 DOWNFIGURE
@@ -120,7 +125,13 @@ DOWNFIGURE
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.DATA       DC.L    DOWNSQUARE
+.DATA       DC.L    DOWNO, DOWNT
+
+
+
+
+
+
 
 
 

@@ -38,8 +38,7 @@ SCRINIT
             ; - SET RESOLUTION TO SCRWIDTH X SCRHEIGHT
             MOVE.B  #33,D0
             MOVE.W  #SCRWIDTH,D1
-            LSL.L   #8,D1
-            LSL.L   #8,D1
+            SWAP.W  D1
             MOVE.W  #SCRHEIGH,D1
             TRAP    #15
             
@@ -294,6 +293,7 @@ DMMFREE
             CLR.W   (A0)
             MOVEM.L (A7)+,D0/A0
             RTS
+
 
 
 

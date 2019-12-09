@@ -10,13 +10,12 @@ INITMATRIX
 ; MODIFIES - MATRIS
 ; -----------------------------------------------------------------------------
             
-            MOVEM.L D0-D2/A0,-(A7)
+            MOVEM.L D0/A0,-(A7)
             LEA.L   HROW4,A0
             MOVE.L  #MROW*MCOLUMN-1,D0        ; COUNTER OF CELLS TO CLEAN
 .LOOP       CLR.B   (A0,D0)
-            ;MOVE.B  #$31,(A0,D0)
             DBRA    D0,.LOOP
-            MOVEM.L (A7)+,D0-D2/A0
+            MOVEM.L (A7)+,D0/A0
             RTS
 
 ; -----------------------------------------------------------------------------
@@ -29,6 +28,7 @@ ISRMOVEDOWN
             
             JSR     DOWNFIGURE
             RTE
+
 
 
 *~Font name~Courier New~

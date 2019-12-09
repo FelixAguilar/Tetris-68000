@@ -10,13 +10,9 @@
 
             INCLUDE "SYSTEM/SYSCONST.X68"   ; SYSTEM CONSTANTS
             INCLUDE "SYSTEM/SYSTEM.X68"     ; SYSTEM CODE
-            INCLUDE "GAME/CONST.X68"        ; GAME CONSTANTS
-            INCLUDE "GAME/INIT.X68"         ; GAME INICIALIZATION
-            INCLUDE "GAME/GRAPHICS.X68"     ; GAME GRAPHICS
-            INCLUDE "GAME/STATES.X68"       ; GAME STATES
+            INCLUDE "GRAPHICS/GRAPHICS.X68" ; GRAPHICS CODE
             INCLUDE "GAME/GAME.X68"         ; GAME CODE
             INCLUDE "FIGURES/FIGURE.X68"    ; FIGURE CODE
-            INCLUDE "FIGURES/SQUARE.X68"    ; FIGURE SQUARE
             
 ; --- INITIALIZE --------------------------------------------------------------
 
@@ -26,7 +22,7 @@ START       JSR     SYSINIT
 ; --- UPDATE ------------------------------------------------------------------
 
 .LOOP       TRAP    #KBDTRAP                ; READ KEYBOARD
-            MOVE.L  NSTATE,A1
+            MOVE.L  STATE,A1
             JSR     (A1)                    ; JUMPS TO NEXT STATE
             
 ; --- WAIT SYNCH --------------------------------------------------------------
@@ -36,9 +32,7 @@ START       JSR     SYSINIT
             CLR.B   (SCRINTCT)
 
 ; --- PLOT --------------------------------------------------------------------
-
-            MOVE.L  DSTATE,A1
-            JSR     (A1)                    ; DRAWS THE CURRENT PLOT STATE         
+         
             TRAP    #SCRTRAP                ; SHOW GRAPHICS
             BRA     .LOOP
             SIMHALT
@@ -49,6 +43,10 @@ START       JSR     SYSINIT
             INCLUDE "GAME/VAR.X68"
             
             END    START
+
+
+
+
 
 
 
