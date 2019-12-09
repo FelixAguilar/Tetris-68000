@@ -2,10 +2,6 @@
 ; GAME VARS
 ; =============================================================================
 
-; --- GAME STATUS RELATED VARIABLES -------------------------------------------
-
-GAMEOVER    DC.B    1                       ; 1 IF IT IS A GAMEOVER
-
 ; --- GAME STATE RELATED VARIABLES --------------------------------------------
 
 STATES      DC.L    STAINIT                 ; INITALIZE STATE   0
@@ -16,21 +12,47 @@ STATES      DC.L    STAINIT                 ; INITALIZE STATE   0
             
 STATE       DS.L    1                       ; ACTIVE STATE
 
-; --- FIGURE RELATED VARIABLES ------------------------------------------------
+; --- ACTUAL TETROMINO RELATED VARIABLES --------------------------------------
 
-FIGTYPE     DS.B    1                       ; CURRENT FIGURE
+FIGTYPE     DS.L    1                       ; CURRENT TETROMINO
+
 FIGROTA     DS.B    1                       ; CURRENT ROTATION
 FIGPOSI     DS.B    1                       ; CURRENT POSITION
 FIGLDOW     DS.B    1                       ; 1 IF CAN NOT GO DOWN
 FIGLRIG     DS.B    1                       ; 1 IF CAN NOT GO RIGHT
 FIGLLEF     DS.B    1                       ; 1 IF CAN NOT GO LEFT
 
-; --- TETROMINO T RELATED VARIABLES -------------------------------------------
+; --- TETROMINOS RELATED VARIABLES --------------------------------------------
 
-TROT        DC.B    -10,-1,+1
-            DC.B    -1,+1,+10
-            DC.B    -1,+1,+10
-            DC.B    -10,-1,+10
+;(ROW,COL)          (00)(01)(02)(10)(11)(12)(20)(21)(22) 
+TFORM       DC.B    $00,$51,$00,$51,$51,$51,$00,$00,$00
+            DC.B    $00,$51,$00,$00,$51,$51,$00,$51,$00
+            DC.B    $00,$00,$00,$51,$51,$51,$00,$51,$00
+            DC.B    $00,$51,$00,$51,$51,$00,$00,$51,$00
+            
+;(ROW,COL)          (00)(01)(02)(10)(11)(12)(20)(21)(22) 
+LFORM       DC.B    $00,$21,$00,$00,$21,$00,$00,$21,$21
+            DC.B    $00,$00,$00,$21,$21,$21,$21,$00,$00
+            DC.B    $21,$21,$00,$00,$21,$00,$00,$21,$00
+            DC.B    $00,$00,$21,$21,$21,$21,$00,$00,$00
+ 
+;(ROW,COL)          (00)(01)(02)(10)(11)(12)(20)(21)(22)            
+JFORM       DC.B    $00,$11,$00,$00,$11,$00,$11,$11,$00
+            DC.B    $11,$00,$00,$11,$11,$11,$00,$00,$00
+            DC.B    $00,$11,$11,$00,$11,$00,$00,$11,$00
+            DC.B    $00,$00,$00,$11,$11,$11,$00,$00,$11
+
+;(ROW,COL)          (00)(01)(02)(10)(11)(12)(20)(21)(22)             
+SFORM       DC.B    $00,$41,$41,$41,$41,$00,$00,$00,$00
+            DC.B    $00,$41,$00,$00,$41,$41,$00,$00,$41
+            DC.B    $00,$00,$00,$00,$41,$41,$41,$41,$00
+            DC.B    $41,$00,$00,$41,$41,$00,$00,$41,$00
+            
+;(ROW,COL)          (00)(01)(02)(10)(11)(12)(20)(21)(22) 
+ZFORM       DC.B    $61,$61,$00,$00,$61,$61,$00,$00,$00
+            DC.B    $00,$00,$61,$00,$61,$61,$00,$61,$00
+            DC.B    $00,$00,$00,$00,$61,$61,$61,$61,$00
+            DC.B    $00,$61,$00,$61,$61,$00,$61,$00,$00
 
 ; --- MATRIX RELATED VARIABLES ------------------------------------------------
 
@@ -58,6 +80,12 @@ ROW16       DS.B    MCOLUMN
 ROW17       DS.B    MCOLUMN
 ROW18       DS.B    MCOLUMN
 ROW19       DS.B    MCOLUMN
+ROW20       DS.B    MCOLUMN                 ; END OF MATRIX
+            
+
+; --- GAME STATUS RELATED VARIABLES -------------------------------------------
+
+GAMEOVER    DC.B    1                       ; 1 IF IT IS A GAMEOVER
             
 ; --- COLOR RELATED VARIABLES -------------------------------------------------
          
@@ -71,6 +99,8 @@ COLOR       DC.L    $00FFFF00              ; CIAN
             DC.L    $001AFF00              ; GREEN
             DC.L    $00FF0095              ; PURPLE
             DC.L    $000000FF              ; RED
+
+
 
 *~Font name~Courier New~
 *~Font size~10~

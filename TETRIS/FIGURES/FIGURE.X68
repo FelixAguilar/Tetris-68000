@@ -21,18 +21,14 @@ INITFIGURE
             CLR.B   FIGLRIG
             CLR.B   FIGLLEF
             
-            CLR.L   D0
-            MOVE.B  D0,FIGTYPE              ; AÑADIR D0 LUEGO
+            MOVE.L  #LFORM,FIGTYPE
             
-            LEA.L   .DATA,A0             
-            MOVEA.L (A0,D0),A0
-            
-            JSR     (A0)                      
+            JSR    INITT                      
             
             MOVEM.L (A7)+,D0/A0
             RTS
             
-.DATA       DC.L    INITO, INITT
+
             
 ; -----------------------------------------------------------------------------
 LEFTFIGURE
@@ -51,7 +47,7 @@ LEFTFIGURE
             LEA.L   .DATA,A0             
             MOVEA.L (A0,D0),A0
             
-            JSR     (A0)
+            JSR     LEFTT
             
             MOVEM.L (A7)+,D0/A0
             RTS
@@ -74,7 +70,7 @@ RIGHTFIGURE
             LEA.L   .DATA,A0             
             MOVEA.L (A0,D0),A0
             
-            JSR     (A0)
+            JSR     RIGHTT
             
             MOVEM.L (A7)+,D0/A0
             RTS
@@ -97,7 +93,7 @@ ROTATEFIGURE
             LEA.L   .DATA,A0             
             MOVEA.L (A0,D0),A0
             
-            JSR     (A0)
+            JSR     ROTATET
             
             MOVEM.L (A7)+,D0/A0
             RTS
@@ -120,12 +116,14 @@ DOWNFIGURE
             LEA.L   .DATA,A0             
             MOVEA.L (A0,D0),A0
             
-            JSR     (A0)
+            JSR     DOWNT
             
             MOVEM.L (A7)+,D0/A0
             RTS
             
 .DATA       DC.L    DOWNO, DOWNT
+
+
 
 
 

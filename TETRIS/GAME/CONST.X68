@@ -4,7 +4,9 @@
 
 ; --- GAME RELATED CONSTANTS ------------------------------------------------
 
-ISRDOWN     EQU     2
+; --- TETROMINO RELATED CONSTANTS ---------------------------------------------
+
+MUL3         EQU     9
 
 
 ; --- MATRIX RELATED CONSTANTS ------------------------------------------------
@@ -19,6 +21,10 @@ WHATCOLOR   EQU     %11110000               ; MASK TO GET THE COLOR OF A SQUARE
 SIDELENGTH  EQU     30                       ; SIZE IN PIXEL OF A SQUARE
 XMATRIX     EQU     (SCRWIDTH/2)-(SIDELENGTH*MCOLUMN)/2
 YMATRIX     EQU     (SCRHEIGH/2)-(SIDELENGTH*(MROW-4))/2                      
+
+
+
+
 
 
 

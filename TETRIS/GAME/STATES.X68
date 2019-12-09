@@ -92,7 +92,7 @@ STAUPDA
             BEQ     .UP
             JSR     DOWNFIGURE
 
-.UP         BTST.B  #1,KBDVAL
+.UP         BTST.B  #1,KBDEDGE
             BEQ     .SPACE
             JSR     ROTATEFIGURE           
             
@@ -132,6 +132,7 @@ STAGMOV
             JSR     DRAWGAMEOVER            ; DRAWS THE GAME OVER PLOT
             
             RTS
+
 
 
 
