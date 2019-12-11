@@ -134,22 +134,6 @@ DRAWTEXT
             RTS
             
 ; -----------------------------------------------------------------------------
-SETCURSOR
-; MOVES THE POINTER IN A CONCTRETE POSITION IN THE SCREEN
-; INPUT    - D1.B = COL NUMBER D2.B = ROW NUMBER 
-; OUTPUT   - NONE
-; MODIFIES - SCREEN
-; -----------------------------------------------------------------------------
-            
-            MOVEM.L D0-D1,-(A7)
-            LSR.L   #4,D1
-            ADD.W   D2,D1
-            MOVE.B  #11,D0
-            TRAP    #15
-            MOVEM.L (A7)+,D0-D1
-            RTS
-            
-; -----------------------------------------------------------------------------
 GETCURSOR
 ; OBTEINS THE POINTER
 ; INPUT    - NONE
@@ -163,6 +147,7 @@ GETCURSOR
             TRAP    #15
             MOVEM.L (A7)+,D0
             RTS
+
 
 
 

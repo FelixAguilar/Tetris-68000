@@ -9,24 +9,12 @@ DRAWGAMEOVER
 ; OUTPUT   - NONE
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
-            MOVEM.L D1-D2/A0,-(A7)
-            
-            MOVE.B  #125,D1
-            MOVE.B  #64,D2
-            JSR     SETCURSOR
-            LEA     .TEXT1,A0
-            JSR     DRAWTEXT
-            MOVE.B  #140,D1
-            MOVE.B  #64,D2 
-            JSR     SETCURSOR
-            LEA     .TEXT2,A0
-            JSR     DRAWTEXT 
-
-            MOVEM.L (A7)+,D1-D2/A0       
+                 
             RTS
             
 .TEXT1      DC.B    'GAME OVER',0
 .TEXT2      DC.B    'PRESS "SPACE" TO START THE GAME',0  
+
 
 
 

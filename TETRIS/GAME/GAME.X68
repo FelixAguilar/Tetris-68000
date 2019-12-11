@@ -1,12 +1,34 @@
 ; =============================================================================
-; STATUS
+; GAME
 ; =============================================================================
 
 ; --- CODE INCLUDES -----------------------------------------------------------
 
             INCLUDE "GAME/CONST.X68"        ; CONSTANTS
-            INCLUDE "GAME/INIT.X68"         ; GAME INIT
             INCLUDE "GAME/STATES.X68"       ; GAME STATES
+            INCLUDE "GAME/TETROMINO.X68"    ; GAME TETROMINO FIGURES
+
+; -----------------------------------------------------------------------------
+INITMATRIX
+; CLEAR MATRIX
+; INPUT    - NONE
+; OUTPUT   - NONE
+; MODIFIES - MATRIS
+; -----------------------------------------------------------------------------
+            
+            MOVEM.L D0/A0,-(A7)
+            LEA.L   HROW4,A0
+            MOVE.L  #MROW*MCOLUMN-1,D0        ; COUNTER OF CELLS TO CLEAN
+.LOOP1      CLR.B   (A0,D0)
+            DBRA    D0,.LOOP1
+            MOVEM.L (A7)+,D0/A0
+            
+            LEA.L   ROW20,A0
+            MOVE.L  #MCOLUMN-1,D0  
+.LOOP2      MOVE.B  #$F1,(A0,D0)
+            DBRA    D0,.LOOP2            
+            
+            RTS
 
 ; -----------------------------------------------------------------------------
 ISGAMEOVER
@@ -109,6 +131,8 @@ ISTETRIS
                        
 .EXIT       MOVEM.L (A7)+,D0-D4/A0
             RTS
+
+
 
 
 

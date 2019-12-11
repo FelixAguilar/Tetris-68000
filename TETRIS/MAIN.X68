@@ -12,7 +12,6 @@
             INCLUDE "SYSTEM/SYSTEM.X68"     ; SYSTEM CODE
             INCLUDE "GRAPHICS/GRAPHICS.X68" ; GRAPHICS CODE
             INCLUDE "GAME/GAME.X68"         ; GAME CODE
-            INCLUDE "FIGURES/FIGURE.X68"    ; FIGURE CODE
             
 ; --- INITIALIZE --------------------------------------------------------------
 
@@ -43,6 +42,7 @@ START       JSR     SYSINIT
             INCLUDE "GAME/VAR.X68"
             
             END    START
+
 
 
 

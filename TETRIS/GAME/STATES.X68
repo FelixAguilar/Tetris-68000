@@ -9,11 +9,25 @@ STAINIT
 ; OUTPUT   - NONE
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
+            MOVEM.L D0-D2/A1,-(A7)
             
             LEA.L   STATES,A0               ; A0 = STATES LIST
             MOVE.L  1*4(A0),STATE          ; STATE = STANMME
+            
+            MOVE.B  #71,D0
+            MOVE.B  #1,D1
+            LEA.L   .MUSIC,A1
+            TRAP    #15
+
+            MOVE.B  #76,D0
+            MOVE.L  #1,D2
+            ;TRAP    #15
+   
+            MOVEM.L (A7)+,D0-D2/A1
             RTS
             
+.MUSIC      DC.B    'SOUND/MAIN.WAV',0
+            DS.W    1
 ; -----------------------------------------------------------------------------
 STANMME
 ; OPERATIONS WHEN IS THE MAIN MENU
@@ -22,13 +36,18 @@ STANMME
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
             
+            
+            
             JSR     DRAWMENU                ; DRAWS THE MENU PLOT
             
             BTST.B  #4,KBDEDGE              ; IF "SPACE" IS PRESED
             BEQ     .END
             LEA.L   STATES,A0               ; A0 = STATES LIST
-            MOVE.L  2*4(A0),STATE           ; UPDATES NEXT STATE    
+            MOVE.L  2*4(A0),STATE           ; UPDATES NEXT STATE
+            
+                
 .END        RTS
+
 
 ; -----------------------------------------------------------------------------
 STANWGM
@@ -43,11 +62,12 @@ STANWGM
             CLR.B   FIGROTA                 ; DEFAULT ROTATION
             CLR.B   FIGPOSI                 ; DEFAULT POSITION
             CLR.B   GAMEOVER                ; DEFAULT GAMEOVER STATUS
+            CLR.B   FIGNEXT
             
             LEA.L   STATES,A0               ; A0 = STATES LIST
             MOVE.L  3*4(A0),STATE          ; STATE = STAUPDA
             
-            JSR     INITFIGURE
+            JSR     INITTETROMINO
 
             MOVEM.L (A7)+,D0-D3
             RTS
@@ -77,29 +97,29 @@ STAUPDA
             JSR     ISTETRIS
             
             ; CREATES A NEW FIGURE
-            JSR     INITFIGURE
+            JSR     INITTETROMINO
             
             ; ACTIONS IF ANY KEY IS PRESED (LEFT, RIGHT, DOWN, UP, SPACE)
 .LEFT       BTST.B  #0,KBDEDGE
             BEQ     .RIGHT
-            JSR     LEFTFIGURE
+            JSR     LEFTTETROMINO
             
 .RIGHT      BTST.B  #2,KBDEDGE
             BEQ     .DOWN
-            JSR     RIGHTFIGURE
+            JSR     RIGHTTETROMINO
 
 .DOWN       BTST.B  #3,KBDVAL
             BEQ     .UP
-            JSR     DOWNFIGURE
+            JSR     DOWNTETROMINO
 
 .UP         BTST.B  #1,KBDEDGE
             BEQ     .SPACE
-            JSR     ROTATEFIGURE           
-            
+            JSR     ROTATETETROMINO
+
             
 .SPACE      BTST.B #4,KBDEDGE
             BEQ     .TEMPMOVE
-            JSR     DOWNFIGURE
+            JSR     DOWNTETROMINO
             BTST.B  #0,FIGLDOW                        
             BEQ     .SPACE
             
@@ -108,7 +128,7 @@ STAUPDA
 .TEMPMOVE   MOVE.B  SCRCYCCT,D0
             ANDI.B  #%00011111,D0
             BNE     .END
-            JSR     DOWNFIGURE
+            JSR     DOWNTETROMINO
             BRA     .END
 
             ; IF IS A GAME OVER CHANGE STATE
@@ -132,6 +152,9 @@ STAGMOV
             JSR     DRAWGAMEOVER            ; DRAWS THE GAME OVER PLOT
             
             RTS
+
+
+
 
 
 

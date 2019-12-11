@@ -16,6 +16,8 @@ STATE       DS.L    1                       ; ACTIVE STATE
 
 FIGTYPE     DS.L    1                       ; CURRENT TETROMINO
 
+FIGNEXT     DS.B    1                       ; NEXT
+
 FIGROTA     DS.B    1                       ; CURRENT ROTATION
 FIGPOSI     DS.B    1                       ; CURRENT POSITION
 FIGLDOW     DS.B    1                       ; 1 IF CAN NOT GO DOWN
@@ -99,6 +101,7 @@ COLOR       DC.L    $00FFFF00              ; CIAN
             DC.L    $001AFF00              ; GREEN
             DC.L    $00FF0095              ; PURPLE
             DC.L    $000000FF              ; RED
+
 
 
 
