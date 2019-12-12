@@ -58,31 +58,31 @@ ZFORM       DC.B    $61,$61,$00,$00,$61,$61,$00,$00,$00
 
 ; --- MATRIX RELATED VARIABLES ------------------------------------------------
 
-HROW4       DS.B    MCOLUMN                 ; ALL THE HROWS WILL NOT SHOW ON  
-HROW3       DS.B    MCOLUMN                 ; THE SCREEN (HIDDEN)
-HROW2       DS.B    MCOLUMN                 
-HROW1       DS.B    MCOLUMN                 
-ROW0        DS.B    MCOLUMN
-ROW1        DS.B    MCOLUMN
-ROW2        DS.B    MCOLUMN
-ROW3        DS.B    MCOLUMN
-ROW4        DS.B    MCOLUMN
-ROW5        DS.B    MCOLUMN
-ROW6        DS.B    MCOLUMN
-ROW7        DS.B    MCOLUMN
-ROW8        DS.B    MCOLUMN
-ROW9        DS.B    MCOLUMN
-ROW10       DS.B    MCOLUMN
-ROW11       DS.B    MCOLUMN
-ROW12       DS.B    MCOLUMN
-ROW13       DS.B    MCOLUMN
-ROW14       DS.B    MCOLUMN
-ROW15       DS.B    MCOLUMN
-ROW16       DS.B    MCOLUMN
-ROW17       DS.B    MCOLUMN
-ROW18       DS.B    MCOLUMN
-ROW19       DS.B    MCOLUMN
-ROW20       DS.B    MCOLUMN                 ; END OF MATRIX
+HMATRIX     DS.B    MCOLUMN                 ; ALL THE HROWS WILL NOT SHOW ON  
+            DS.B    MCOLUMN                 ; THE SCREEN (HIDDEN)
+            DS.B    MCOLUMN                 
+            DS.B    MCOLUMN                 
+MATRIX      DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+            DS.B    MCOLUMN
+LIMIT       DS.B    MCOLUMN                 ; END OF MATRIX
             
 
 ; --- GAME STATUS RELATED VARIABLES -------------------------------------------
@@ -101,6 +101,7 @@ COLOR       DC.L    $00FFFF00              ; CIAN
             DC.L    $001AFF00              ; GREEN
             DC.L    $00FF0095              ; PURPLE
             DC.L    $000000FF              ; RED
+
 
 
 

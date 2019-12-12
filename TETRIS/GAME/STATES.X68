@@ -21,7 +21,7 @@ STAINIT
 
             MOVE.B  #76,D0
             MOVE.L  #1,D2
-            ;TRAP    #15
+            TRAP    #15
    
             MOVEM.L (A7)+,D0-D2/A1
             RTS
@@ -126,7 +126,7 @@ STAUPDA
             ; MOVE FIGURE DOWN EACH 50 SEC APROX
             
 .TEMPMOVE   MOVE.B  SCRCYCCT,D0
-            ANDI.B  #%00011111,D0
+            ANDI.B  #%00001111,D0
             BNE     .END
             JSR     DOWNTETROMINO
             BRA     .END
@@ -152,6 +152,8 @@ STAGMOV
             JSR     DRAWGAMEOVER            ; DRAWS THE GAME OVER PLOT
             
             RTS
+
+
 
 
 

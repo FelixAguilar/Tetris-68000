@@ -52,7 +52,7 @@ DOWNTETROMINO
             
             ; GETS THE TETROMINO AND MATRIX VALUES
 
-            LEA.L   HROW4,A0                ; A0 = MATRIX STATING POINT
+            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
             MOVEA.L FIGTYPE,A1              ; A1 = TETROMINO STRUCTURE MATRIX
             MOVE.B  FIGPOSI,D0              ; D0 = POSITION INDEX TETROMINO
             MOVE.B  FIGROTA,D1              ; D1 = ROTATION INDEX
@@ -103,7 +103,7 @@ LEFTTETROMINO
 
             ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
             
-            LEA.L   HROW4,A0                ; A0 = MATRIX STATING POINT
+            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
             MOVEA.L FIGTYPE,A1              ; A1 = TETROMINO STRUCTURE MATRIX            
             MOVE.B  FIGPOSI,D0              ; D0 = POSITION INDEX IN MATRIX
             MOVE.B  FIGROTA,D1              ; D1 = ROTATION INDEX
@@ -184,7 +184,7 @@ RIGHTTETROMINO
 
             ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
             
-            LEA.L   HROW4,A0                ; A0 = MATRIX STATING POINT
+            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
             MOVEA.L FIGTYPE,A1              ; A1 = TETROMINO STRUCTURE MATRIX            
             MOVE.B  FIGPOSI,D0              ; D0 = POSITION INDEX IN MATRIX
             MOVE.B  FIGROTA,D1              ; D1 = ROTATION INDEX
@@ -268,7 +268,7 @@ ROTATETETROMINO
             
             ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
             
-            LEA.L   HROW4,A0                ; A0 = MATRIX STATING POINT
+            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
             MOVEA.L FIGTYPE,A1              ; A1 = TETROMINO STRUCTURE MATRIX
             MOVE.B  FIGPOSI,D0              ; D0 = POSITION INDEX TETROMINO 
             MOVE.B  FIGROTA,D1              ; D1 = CURRENT ROTATION TETROMINO
@@ -341,7 +341,7 @@ ADDTETROMINO
             CLR.L   D0
             CLR.L   D1
             
-            LEA.L   HROW4,A0                ; A0 = MATRIX STATING POINT
+            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
             MOVEA.L FIGTYPE,A1              ; A1 = TETROMINO STRUCTURE MATRIX
             MOVE.B  FIGPOSI,D0              ; D0 = POSITION INDEX TETROMINO 
             MOVE.B  FIGROTA,D1              ; D1 = CURRENT ROTATION TETROMINO
@@ -376,8 +376,8 @@ CLRTETROMINO
             CLR.L   D0
             CLR.L   D1
             
-            LEA.L   HROW4,A0                ; A0 = MATRIX STATING POINT
-            MOVEA.L FIGTYPE,A1                ; A1 = TETROMINO STRUCTURE MATRIX
+            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
+            MOVEA.L FIGTYPE,A1              ; A1 = TETROMINO STRUCTURE MATRIX
             MOVE.B  FIGPOSI,D0              ; D0 = POSITION INDEX TETROMINO 
             MOVE.B  FIGROTA,D1              ; D1 = CURRENT ROTATION TETROMINO
             MOVE.W  #2,D2                   ; D2 = COL INDEX FOR TETROMINO
@@ -397,6 +397,7 @@ CLRTETROMINO
             
             MOVEM.L (A7)+,D0-D3/A0-A1
             RTS
+
 
 
 

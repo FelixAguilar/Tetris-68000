@@ -17,13 +17,13 @@ INITMATRIX
 ; -----------------------------------------------------------------------------
             
             MOVEM.L D0/A0,-(A7)
-            LEA.L   HROW4,A0
+            LEA.L   HMATRIX,A0
             MOVE.L  #MROW*MCOLUMN-1,D0        ; COUNTER OF CELLS TO CLEAN
 .LOOP1      CLR.B   (A0,D0)
             DBRA    D0,.LOOP1
             MOVEM.L (A7)+,D0/A0
             
-            LEA.L   ROW20,A0
+            LEA.L   LIMIT,A0
             MOVE.L  #MCOLUMN-1,D0  
 .LOOP2      MOVE.B  #$F1,(A0,D0)
             DBRA    D0,.LOOP2            
@@ -40,7 +40,7 @@ ISGAMEOVER
             
             MOVEM.L D0/A0,-(A7)         
             
-            LEA.L   HROW1,A0
+            LEA.L   HMATRIX,A0
             MOVE.L  #MCOLUMN-1,D0
             
 .LOOP       BTST.B  #0,(A0,D0)           
@@ -63,7 +63,7 @@ ISTETRIS
             
             MOVEM.L D0-D4/A0,-(A7)         
             
-            LEA.L   ROW0,A0                 ; A0 = MATRIX BEGIN
+            LEA.L   MATRIX,A0               ; A0 = MATRIX BEGIN
             CLR.L   D0                      ; D0 = CELL POINTER
             CLR.L   D1                      ; D1 = COLUMN COUNTER
             CLR.L   D3                      ; D3 = FULL ROWS AFTER D2 POINTER
@@ -121,7 +121,7 @@ ISTETRIS
             ADD.B   D1,D0
             SUB.B   #MCOLUMN,D0
             
-.MOVE       LEA.L   HROW4,A0
+.MOVE       LEA.L   HMATRIX,A0
             ADD.B   #MCOLUMN*4-1,D4
             ADD.B   #MCOLUMN*4-1,D0
 
@@ -131,6 +131,7 @@ ISTETRIS
                        
 .EXIT       MOVEM.L (A7)+,D0-D4/A0
             RTS
+
 
 
 
