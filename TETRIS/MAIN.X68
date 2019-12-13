@@ -8,10 +8,15 @@
 
 ; --- CODE INCLUDES -----------------------------------------------------------
 
-            INCLUDE "SYSTEM/SYSCONST.X68"   ; SYSTEM CONSTANTS
-            INCLUDE "SYSTEM/SYSTEM.X68"     ; SYSTEM CODE
+            INCLUDE "SYSCONST.X68"          ; SYSTEM CONSTANTS
+            INCLUDE "CONST.X68"             ; GAME CONSTANTS
+            
+            INCLUDE "SYSTEM.X68"            ; SYSTEM CODE
             INCLUDE "GRAPHICS/GRAPHICS.X68" ; GRAPHICS CODE
-            INCLUDE "GAME/GAME.X68"         ; GAME CODE
+            
+            INCLUDE "GAME.X68"              ; GAME CODE
+            INCLUDE "STATES.X68"            ; GAME STATES
+            INCLUDE "TETROMINO.X68"         ; GAME TETROMINO FIGURES
             
 ; --- INITIALIZE --------------------------------------------------------------
 
@@ -38,10 +43,12 @@ START       JSR     SYSINIT
 
 ; --- VARIABLES ---------------------------------------------------------------
 
-            INCLUDE "SYSTEM/SYSVAR.X68"
-            INCLUDE "GAME/VAR.X68"
+            INCLUDE "SYSVAR.X68"
+            INCLUDE "VAR.X68"
             
             END    START
+
+
 
 
 

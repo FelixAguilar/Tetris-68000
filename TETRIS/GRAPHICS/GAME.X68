@@ -23,8 +23,8 @@ DRAWGAME
             
             MOVE.W  #2,D5
             
-            LEA.L   .CONTAINERX,A0          ; A0 = CONTAINER COORDENATE X
-            LEA.L   .CONTAINERY,A1          ; A1 = CONTAINER COORDENATE Y
+            LEA.L   GAMECONX,A0             ; A0 = CONTAINER COORDENATE X
+            LEA.L   GAMECONY,A1             ; A1 = CONTAINER COORDENATE Y
 .LOOP1      MOVE.W  (A0)+,D1                ; D1 = LX CONTAINER
             MOVE.W  (A1)+,D2                ; D2 = UY CONTAINER
             MOVE.W  (A0)+,D3                ; D3 = RX CONTAINER
@@ -36,22 +36,41 @@ DRAWGAME
             ; DRAW TEXT
             
             MOVE.B  #95,D0
-            LEA.L   .TEXTXY,A0              ; A0 = TEXT COORDINATES ARRAY
+            LEA.L   TXTGAMXY,A0             ; A0 = TEXT COORDINATES ARRAY
             
             MOVE.W  (A0)+,D1                ; D1 = X TEXT COORDINATE
             MOVE.W  (A0)+,D2                ; D2 = Y TEXT COORDINATE
-            LEA     .TEXTS,A1               ; A1 = TEXT1 POINTER
+            LEA     TEXTSCRE,A1             ; A1 = TEXT1 POINTER
             TRAP    #15                     ; WRITE THE TEXT
             
             MOVE.W  (A0)+,D1
             MOVE.W  (A0)+,D2
-            LEA     .TEXTN,A1
+            LEA     TEXTNEXT,A1
             TRAP    #15
       
             ; DRAW NEXT TETROMINO
             
+            CLR.L   D0
+            LEA.L   COLOR,A1                ; A1 = COLOR ARRAY POINTER
+            LEA.L   LNEXT,A2
+            MOVE.B  FIGNEXT,D0
+            MULU.W  #4,D0
+            MOVEA.L (A2,D0),A2
+            MOVE.W  (A2)+,D1
+            MULU.W  #4,D1
+            MOVE.L  (A1,D1),D1              ; D1 = COLOR
+            JSR     CHPENCL                 ; CHANGE PEN COLOR
+            JSR     CHFILLCL                ; CHANGE FILL COLOR
             
-      
+            MOVE.B  #87,D0
+            MOVE.W  (A2)+,D5                ; D5 = LOOP COUNTER
+.LOOP2      MOVE.W  (A2)+,D1
+            MOVE.W  (A2)+,D2
+            MOVE.W  (A2)+,D3
+            MOVE.W  (A2)+,D4
+            TRAP    #15
+            DBRA    D5,.LOOP2
+                 
             ; DRAW MATRIX
             
             LEA.L   MATRIX,A0               ; A0 = VISIBLE MATRIX
@@ -61,7 +80,7 @@ DRAWGAME
             CLR.L   D3                      ; D3 = X
             CLR.L   D4
             
-.LOOP2      CLR.L   D1
+.LOOP3      CLR.L   D1
             MOVE.B  (A0,D0),D1              ; D1 = CELL CONTENT
             
             ; SQUARE CHECK
@@ -96,22 +115,14 @@ DRAWGAME
             
 .SKIP2      ADDQ.W  #1,D0                   ; ADDS 1 TO CELL TO DRAW
             CMP     #(MROW-4)*MCOLUMN,D0    ; CHECKS IF END OF MATRIX
-            BNE     .LOOP2
+            BNE     .LOOP3
             
             MOVE.B  #87,D0                  
             TRAP    #15                     ; DRAW SQUARE
             
             MOVEM.L (A7)+,D0-D5/A0-A1
             RTS
-
-.CONTAINERX DC.W    345,655,700,830,700,830 
-.CONTAINERY DC.W    045,655,070,200,225,250
-
-.TEXTXY     DC.W    705,230,700,050
-.TEXTS      DC.B    'SCORE:',0
-.TEXTN      DC.B    'NEXT TETROMINO:',0
-            DS.W    0
-               
+              
 ; -----------------------------------------------------------------------------
 .DRAWSQUARE
 ; DRAW A SQUARE IN THE SCREEN
@@ -142,10 +153,7 @@ DRAWGAME
             
             MOVEM.L (A7)+,D0-D4
 
-            RTS   
-
-
-
+            RTS
 
 
 *~Font name~Courier New~

@@ -1,0 +1,47 @@
+; =============================================================================
+; GAME CONST
+; =============================================================================
+
+; --- SOUND RELATED CONSTANTS -------------------------------------------------
+
+;           (0 = DISABLED, 1 = ENABLED)
+MUSIC       EQU     0                       ; MUSIC TETRIS
+SOUND       EQU     0                       ; SOUNDS IN-GAME
+
+; --- GAME RELATED CONSTANTS --------------------------------------------------
+
+
+
+; --- TETROMINO RELATED CONSTANTS ---------------------------------------------
+
+MUL3         EQU     9
+
+; --- MATRIX RELATED CONSTANTS ------------------------------------------------
+
+MROW        EQU     24                      ; NUMBER OF ROWS
+MCOLUMN     EQU     10                      ; NUMBER OF COLUMNS
+ISFILLED    EQU     %00000001               ; MASK FOR CHECK A SQUARE IS USED
+WHATCOLOR   EQU     %11110000               ; MASK TO GET THE COLOR OF A SQUARE
+
+; --- GRAFICS RELATED CONSTANTS -----------------------------------------------
+
+SIDELENGTH  EQU     30                       ; SIZE IN PIXEL OF A SQUARE
+XMATRIX     EQU     (SCRWIDTH/2)-(SIDELENGTH*MCOLUMN)/2
+YMATRIX     EQU     (SCRHEIGH/2)-(SIDELENGTH*(MROW-4))/2                      
+
+
+
+
+
+
+
+
+
+
+
+
+
+*~Font name~Courier New~
+*~Font size~10~
+*~Tab type~0~
+*~Tab size~4~
