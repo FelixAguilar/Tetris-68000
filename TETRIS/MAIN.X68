@@ -1,22 +1,23 @@
 ; =============================================================================
-; TITLE    : TETRIS GAME
-; AUTHOR   : FELIX AGUILAR FERRER
-; CREATION :
+; TITLE    : TETRIS
+; AUTHOR   : FELIX LLUIS AGUILAR FERRER
+; CREATION : 
 ; =============================================================================
 
             ORG     $1000
 
 ; --- CODE INCLUDES -----------------------------------------------------------
 
-            INCLUDE "SYSCONST.X68"          ; SYSTEM CONSTANTS
-            INCLUDE "CONST.X68"             ; GAME CONSTANTS
+            INCLUDE "SYSTEM/SYSCONST.X68"   ; SYSTEM CONSTANTS
+            INCLUDE "TETRIS/CONST.X68"      ; TETRIS CONSTANTS
             
-            INCLUDE "SYSTEM.X68"            ; SYSTEM CODE
-            INCLUDE "GRAPHICS/GRAPHICS.X68" ; GRAPHICS CODE
+            INCLUDE "SYSTEM/SYSTEM.X68"     ; SYSTEM CODE
+            INCLUDE "SYSTEM/STATES.X68"     ; SYSTEM STATES
             
-            INCLUDE "GAME.X68"              ; GAME CODE
-            INCLUDE "STATES.X68"            ; GAME STATES
-            INCLUDE "TETROMINO.X68"         ; GAME TETROMINO FIGURES
+            INCLUDE "TETRIS/TETRIS.X68"     ; TETRIS INIT AND UPDATE CODE
+            INCLUDE "TETRIS/TETROMINO.X68"  ; TETROMINO MOVEMENT
+            INCLUDE "TETRIS/GRAPHICS.X68"   ; GRAPHICS CODE
+            INCLUDE "TETRIS/SOUND.X68"      ; SOUND CODE
             
 ; --- INITIALIZE --------------------------------------------------------------
 
@@ -26,8 +27,8 @@ START       JSR     SYSINIT
 ; --- UPDATE ------------------------------------------------------------------
 
 .LOOP       TRAP    #KBDTRAP                ; READ KEYBOARD
-            MOVE.L  STATE,A1
-            JSR     (A1)                    ; JUMPS TO NEXT STATE
+            MOVE.L  STATE,A1                ; A1 = CURRENT STATE
+            JSR     (A1)                    ; JUMPS TO CURRENT STATE
             
 ; --- WAIT SYNCH --------------------------------------------------------------
 
@@ -43,35 +44,10 @@ START       JSR     SYSINIT
 
 ; --- VARIABLES ---------------------------------------------------------------
 
-            INCLUDE "SYSVAR.X68"
-            INCLUDE "VAR.X68"
+            INCLUDE "SYSTEM/SYSVAR.X68"     ; SYSTEM VARIABLES
+            INCLUDE "TETRIS/VAR.X68"        ; SYSTEM VARUABLES
             
             END    START
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
