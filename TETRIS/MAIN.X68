@@ -1,7 +1,7 @@
 ; =============================================================================
 ; TITLE    : TETRIS
 ; AUTHOR   : FELIX LLUIS AGUILAR FERRER
-; CREATION : 
+; CREATION : 16-DEC-2019
 ; =============================================================================
 
             ORG     $1000
@@ -12,8 +12,8 @@
             INCLUDE "TETRIS/CONST.X68"      ; TETRIS CONSTANTS
             
             INCLUDE "SYSTEM/SYSTEM.X68"     ; SYSTEM CODE
-            INCLUDE "SYSTEM/STATES.X68"     ; SYSTEM STATES
             
+            INCLUDE "TETRIS/STATES.X68"     ; SYSTEM STATES
             INCLUDE "TETRIS/TETRIS.X68"     ; TETRIS INIT AND UPDATE CODE
             INCLUDE "TETRIS/TETROMINO.X68"  ; TETROMINO MOVEMENT
             INCLUDE "TETRIS/GRAPHICS.X68"   ; GRAPHICS CODE
@@ -27,6 +27,7 @@ START       JSR     SYSINIT
 ; --- UPDATE ------------------------------------------------------------------
 
 .LOOP       TRAP    #KBDTRAP                ; READ KEYBOARD
+
             MOVE.L  STATE,A1                ; A1 = CURRENT STATE
             JSR     (A1)                    ; JUMPS TO CURRENT STATE
             
@@ -48,6 +49,8 @@ START       JSR     SYSINIT
             INCLUDE "TETRIS/VAR.X68"        ; SYSTEM VARUABLES
             
             END    START
+
+
 
 
 

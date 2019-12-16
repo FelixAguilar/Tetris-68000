@@ -10,7 +10,7 @@ INITTETROMINO
 ; MODIFIES - MATRIX
 ; -----------------------------------------------------------------------------
             
-            MOVEM.L D0/A0,-(A7)
+            MOVEM.L D0-D1/A0,-(A7)
             
             ; CLEAR VARIABLES
             
@@ -19,19 +19,25 @@ INITTETROMINO
             CLR.B   TETROLLF                ; LIMIT LEFT
             CLR.B   TETROROT                ; ROTATION
             CLR.L   D0
+            CLR.L   D1
             
             ; UPDATE TETROMINO
             
+            LEA.L   RANDLIST,A1
             LEA.L   TETROLNK,A0             ; A0 = NEXT TETROMINO ARRAY
+
             MOVE.B  TETRONXT,D0             ; D0 = NEXT TETROMINO
             MOVE.B  D0,TETROMUL
             MULU.W  #4,D0
             MOVE.L  (A0,D0),TETROACT        ; UPDATES TETROACT WITH NEXT
-            DIVU.W  #4,D0
-            ADDQ.B  #1,D0
-            DIVU.W  #7,D0
-            SWAP.W  D0
-            MOVE.B  D0,TETRONXT             ; UPDATES TETRONXT WITH D0
+            
+            ADDQ.B  #1,RANDOM
+            CMP.B   #MAXRAND,RANDOM
+            BNE     .SKIP
+            CLR.B   RANDOM
+.SKIP       CLR.L   D0
+            MOVE.B  RANDOM,D0
+            MOVE.B  (A1,D0),TETRONXT
                     
             ; SETS STARTING POINT FOR TETROMINO
             
@@ -41,7 +47,7 @@ INITTETROMINO
             
             JSR     ADDTETROMINO            ; ADDS THE NEW TETROMINO
             
-            MOVEM.L (A7)+,D0/A0
+            MOVEM.L (A7)+,D0-D1/A0
             RTS
 
 ; -----------------------------------------------------------------------------
@@ -533,6 +539,8 @@ CLRTETROMINO
             
             MOVEM.L (A7)+,D0-D3/A0-A1
             RTS
+
+
 
 
 

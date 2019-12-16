@@ -71,8 +71,8 @@ SFORM       DC.B    $00,$41,$41,$41,$41,$00 ; TETROMINO S
 ZFORM       DC.B    $61,$61,$00,$00,$61,$61 ; TETROMINO Z
             DC.B    $00,$00,$00,$00,$00,$61
             DC.B    $00,$61,$61,$00,$61,$00
-            DC.B    $00,$00,$00,$00,$61,$61
-            DC.B    $61,$61,$00,$00,$61,$00
+            DC.B    $00,$00,$00,$61,$61,$00
+            DC.B    $00,$61,$61,$00,$61,$00
             DC.B    $61,$61,$00,$61,$00,$00
             
 IFORM       DC.B    $00,$00,$01,$00,$00,$00 ; TETROMINO I
@@ -187,11 +187,11 @@ MENUXY      DC.W    370,340,370,360,370,380 ; TEXT COORDENATES (X,Y)
 MENUINST    DC.B    'PRESS "P" TO SHOW THE INSTRUCTIONS',0
 MENUSTRT    DC.B    'PRESS "SPACE" TO START THE GAME',0
 MENUATHR    DC.B    'MADE BY FELIX LLUIS AGUILAR FERRER',0
-            DS.W    0
             
             ; INSTRUCTIONS VARIABLES           
             
 SHOWINST    DC.B    0
+            DS.W    0
 INSTCONT    DC.W    290,270,700,430         ; LX, UY, RX, LY FOR MENU CONTAINER
       
 INSTXY      DC.W    300,280,300,320,300,340 ; TEXT COORDENATES (X,Y) 
@@ -239,10 +239,10 @@ NEXTL       DC.W    2,1,765,090,795,171,735 ; TETRINOMIO L
             DC.W    141,765,171
 NEXTJ       DC.W    1,1,735,090,765,171,765 ; TETRINOMIO J
             DC.W    141,795,171
-NEXTS       DC.W    4,1,720,105,780,135,750 ; TETRINOMIO S
-            DC.W    135,810,165
-NEXTZ       DC.W    6,1,720,135,780,165,750 ; TETRINOMIO Z
+NEXTS       DC.W    4,1,720,135,780,165,750 ; TETRINOMIO S
             DC.W    105,810,135
+NEXTZ       DC.W    6,1,720,105,780,135,750 ; TETRINOMIO Z
+            DC.W    135,810,165
 NEXTI       DC.W    0,0,750,075,780,190     ; TETRINOMIO I
 
 TXTGAMXY    DC.W    705,225,700,050         ; TEXT COORDENATES X,Y
@@ -300,8 +300,29 @@ SHOWTEXT    DC.B    1                       ; IF HAS TO SHOW TEXTREST
 
 TEXTRESL    DC.B    'TOTAL SCORE: ',0
 TEXTREST    DC.B    'PRESS "SPACE" TO RESTART THE GAME',0
+            
+            ; RANDOM LIST
+
+RANDOM      DS.B    1
+            
+RANDLIST    DC.B    5,6,1,4,0,3,2,4,3,6,1,0
+            DC.B    5,2,4,3,1,0,5,6,2,1,3,6
+            DC.B    0,1,2,4,5,0,6,1,4,3,5,3
+            DC.B    2,1,5,6,0,4,3,6,4,1,2,0
+            DC.B    5,2,6,5,4,1,3,0,2,1,6,4
+            DC.B    5,3,0,3,6,4,5,1,2,0,6,5
+            DC.B    4,1,2,0,3,2,1,5,4,6,0,3
+            DC.B    5,6,0,2,3,4,1,0,2,6,4,5
+            DC.B    1,3,1,6,5,4,0,2,3,3,2,1
+            DC.B    5,6,0,4,3,0,2,4,5,6,1,5
+            DC.B    4,6,0,3,1,2,3,5,0,2,6,4
+            DC.B    1,4,1,0,2,3,5,6
 
             DS.W    0
+
+
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~

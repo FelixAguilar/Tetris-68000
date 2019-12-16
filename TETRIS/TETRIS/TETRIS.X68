@@ -51,7 +51,7 @@ ISGAMEOVER
             SUB.L   #MCOLUMN,A0             ; A0 = LAST NON VISIBLE ROW POINTER
             MOVE.L  #MCOLUMN-1,D0           ; D0 = MATRIX CELLS TO CHECK
             
-.LOOP       BTST.B  #0,(A0,D0)              ; IF CELL IS FILLED
+.LOOP       BTST.B  #TESTBIT0,(A0,D0)              ; IF CELL IS FILLED
             BNE     .GAMEOVER               ; IF IS FILLED END GAME
             DBRA    D0,.LOOP                ; CHECK NEXT CELL
             BRA     .END
@@ -88,7 +88,7 @@ ISTETRIS
             
             ; CHECKS THE ROW IF IS FULL
             
-.LOOP1      BTST.B  #0,(A0,D0)
+.LOOP1      BTST.B  #TESTBIT0,(A0,D0)
             BEQ     .NEXT1
             ADDQ.B  #1,D0
             DBRA    D1,.LOOP1
@@ -117,7 +117,7 @@ ISTETRIS
             ; CHECK NEXT LINE IF IS FULL
             
             MOVE.W  #MCOLUMN-1,D1
-.LOOP3      BTST.B  #0,(A0,D0)
+.LOOP3      BTST.B  #TESTBIT0,(A0,D0)
             BEQ     .PREMOVE
             ADDQ.B  #1,D0
             DBRA    D1,.LOOP3
@@ -141,20 +141,22 @@ ISTETRIS
             
             CMP.B   #4,D3
             BNE     .NSOUND
-            MOVE.B  #2,D1
+            MOVE.B  #NCLEAR,D1
             BRA     .PLAY
-.NSOUND     MOVE.B  #5,D1
+.NSOUND     MOVE.B  #NLINE,D1
 .PLAY       JSR     SOUNDPLAY 
             
             ; UPDATE SCORE
 
             MOVE.L  #BASESCRE,D4
-.LOOP5      MULU    #BASESCRE,D4
+            SUBQ.W  #1,D3   
+.LOOP5      MULU.W  #BASESCRE,D4
             DBRA    D3,.LOOP5
             ADD.L   D4,SCORE          
                        
 .EXIT       MOVEM.L (A7)+,D0-D4/A0
             RTS
+
 
 
 
