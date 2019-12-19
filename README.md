@@ -34,6 +34,8 @@ This are the features added inside the aplication if they are checked means that
  - Game features:
    - [x] Score
    - [ ] Score rank
-   - [ ] Random tetrominos
+   - [x] Random tetrominos
+   - [ ] Move tetromino if it can not rotate
+   - [ ] Clear all lines if there are multiple lines filled between a empty line
    
 This aplication has been designed and implemented by @FelixAguilar
