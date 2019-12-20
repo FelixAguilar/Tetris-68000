@@ -15,17 +15,23 @@ SOUNDINIT
             MOVE.B  #MUSIC,D0               ; CHECKS IF MUSIC IS ACTIVE
             BEQ     .SKIP
 
+            ;LOAD INTO MEMORY MUSIC
+            
             MOVE.B  #71,D0
             MOVE.B  #NMUSIC,D1
             LEA.L   MELODY,A1
             TRAP    #15
 
+            ; PLAY MUSIC IN LOOP
+            
             MOVE.B  #76,D0
             MOVE.L  #NMUSIC,D2
-            TRAP    #15                     ; PLAYS MELODY IN LOOP
+            TRAP    #15
    
 .SKIP       MOVE.B  #SOUND,D0               ; CHECKS IF SOUNDS ARE ACTIVE
             BEQ     .END
+            
+            ; LOAD INTO MEMORY SOUNDS
             
             MOVE.B  #71,D0
             MOVE.B  #NCLEAR,D1
@@ -52,7 +58,7 @@ SOUNDINIT
             
 ; ----------------------------------------------------------------------------
 SOUNDPLAY
-; PLAYS SOUND IF IS ACTIVE AND THERE IS NO MUSIC
+; PLAYS A SOUND SOUND IF IS ACTIVE AND THERE IS NO MUSIC
 ; INPUT    - D1.B = SOUND TO PLAY
 ; OUTPUT   - NONE
 ; MODIFIES - NONE
@@ -66,20 +72,21 @@ SOUNDPLAY
             MOVE.B  #SOUND,D0               ; CHECKS IF SOUNDS ARE ACTIVE
             BEQ     .END
             
+            ; STOPS ALL SOUNDS
+            
             MOVE.B  #76,D0
             MOVE.L  #3,D2
-            TRAP    #15                     ; STOPS ALL SOUNDS
+            TRAP    #15
+
+            ; PLAY INPUT SOUND
+            
             MOVE.B  #72,D0
-            TRAP    #15                     ; PLAYS NEW SOUND
+            TRAP    #15
             
 .END        MOVEM.L (A7)+,D0-D2
             RTS
             
 ; -----------------------------------------------------------------------------
-
-
-
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~

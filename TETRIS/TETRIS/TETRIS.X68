@@ -14,23 +14,22 @@ INITTETRIS
             
             ; CLEAR VARIABLES
             
-            CLR.B   TETROROT                ; DEFAULT ROTATION
-            CLR.B   TETROPOS                ; DEFAULT POSITION
-            CLR.B   GAMEOVER                ; DEFAULT GAMEOVER STATUS
-            CLR.B   TETRONXT                ; DEFAULT NEXT TETROMINO
-            CLR.L   SCORE                   ; DEFAULT SCORE
+            CLR.B   TETROROT
+            CLR.B   TETROPOS
+            CLR.B   TETRONXT
+            CLR.L   SCORE
             
             ; CLEAR MATRIX
             
             LEA.L   HMATRIX,A0
-            MOVE.L  #MROW*MCOLUMN-1,D0        ; COUNTER OF CELLS TO CLEAN
+            MOVE.L  #MROW*MCOLUMN-1,D0
 .LOOP2      CLR.B   (A0,D0)
             DBRA    D0,.LOOP2
 
             ; DEFINE MATRIX LIMIT
             
             LEA.L   LIMIT,A0
-            MOVE.L  #MCOLUMN-1,D0           ; COUNTER OF CELLS TO SET 
+            MOVE.L  #MCOLUMN-1,D0 
 .LOOP3      MOVE.B  #$F1,(A0,D0)
             DBRA    D0,.LOOP3            
             
@@ -41,24 +40,31 @@ INITTETRIS
 ISGAMEOVER
 ; CHECKS IF THE GAME MUST END
 ; INPUT    - NONE
-; OUTPUT   - GAMEOVER
+; OUTPUT   - D0.B = IS GAME OVER
 ; MODIFIES - NONE
 ; -----------------------------------------------------------------------------
             
-            MOVEM.L D0/A0,-(A7)         
+            MOVE.L  A0,-(A7)         
             
-            LEA.L   MATRIX,A0               ; A0 = VISIBLE MATRIX POINTER
-            SUB.L   #MCOLUMN,A0             ; A0 = LAST NON VISIBLE ROW POINTER
-            MOVE.L  #MCOLUMN-1,D0           ; D0 = MATRIX CELLS TO CHECK
+            ; DATA PREPARATIOM
             
-.LOOP       BTST.B  #TESTBIT0,(A0,D0)              ; IF CELL IS FILLED
-            BNE     .GAMEOVER               ; IF IS FILLED END GAME
-            DBRA    D0,.LOOP                ; CHECK NEXT CELL
+            LEA.L   MATRIX,A0
+            SUB.L   #MCOLUMN,A0
+            MOVE.L  #MCOLUMN-1,D0
+            
+            ; CHECK LINE
+            
+.LOOP       BTST.B  #0,(A0,D0)
+            BNE     .GAMEOVER
+            DBRA    D0,.LOOP
+            MOVE.B  #0,D0
             BRA     .END
             
-.GAMEOVER   MOVE.B  #1,GAMEOVER             ; SETS GAMEOVER TO 1    
+            ; SET GAME OVER
             
-.END        MOVEM.L (A7)+,D0/A0
+.GAMEOVER   MOVE.B  #1,D0    
+            
+.END        MOVE.L  (A7)+,A0
             RTS
 
 ; -----------------------------------------------------------------------------
@@ -71,34 +77,39 @@ ISTETRIS
             
             MOVEM.L D0-D4/A0,-(A7)         
             
-            LEA.L   MATRIX,A0               ; A0 = MATRIX BEGIN
+            ; CLEAR REGISTERS
+            
             CLR.L   D0
             CLR.L   D1
             CLR.L   D3
             CLR.L   D4
+            
+            ; LIST POINTERS
+            
+            LEA.L   MATRIX,A0            
             BRA     .START
             
-            ; LOOP TO FIND A FULL LINE
+            ; NEXT LINE
  
-.NEXT1      ADDQ.B  #1,D1
+.NEXT       ADDQ.B  #1,D1
             ADD.B   D1,D0                      
             CMP     #(MROW-4)*MCOLUMN,D0
             BEQ     .EXIT
+            
+            ; CHECK IF THE LINE IS FULL
+            
 .START      MOVE.L  #MCOLUMN-1,D1                        
-            
-            ; CHECKS THE ROW IF IS FULL
-            
-.LOOP1      BTST.B  #TESTBIT0,(A0,D0)
-            BEQ     .NEXT1
+.LOOP1      BTST.B  #0,(A0,D0)
+            BEQ     .NEXT
             ADDQ.B  #1,D0
             DBRA    D1,.LOOP1
             
-            ; IF A ROW IS FULL THEN
+            ; IF IT IS THEN
             
             MOVE.B  D0,D4                   
-            SUB.B   #MCOLUMN,D4             ; STARTING CELL IN FIRST FULL LINE
+            SUB.B   #MCOLUMN,D4
             
-            ; CLEAN THE FULL ROW
+            ; CLEAR THE FULL ROW
             
 .CLEAN      MOVE.W  #MCOLUMN-1,D1
 .LOOP2      SUBQ.B  #1,D0
@@ -114,16 +125,16 @@ ISTETRIS
             CMP     #(MROW-4)*MCOLUMN,D0
             BEQ     .MOVE
             
-            ; CHECK NEXT LINE IF IS FULL
+            ; CHECK NEXT LINE IF IS FULL TOO
             
             MOVE.W  #MCOLUMN-1,D1
-.LOOP3      BTST.B  #TESTBIT0,(A0,D0)
+.LOOP3      BTST.B  #0,(A0,D0)
             BEQ     .PREMOVE
             ADDQ.B  #1,D0
             DBRA    D1,.LOOP3
             BRA     .CLEAN  
 
-            ; MOVE MATRIX CONTENT DOWN
+            ; MOVE MATRIX VALUES DOWN
 
 .PREMOVE    ADDQ.B  #1,D1
             ADD.B   D1,D0
@@ -156,6 +167,10 @@ ISTETRIS
                        
 .EXIT       MOVEM.L (A7)+,D0-D4/A0
             RTS
+
+
+
+
 
 
 

@@ -14,6 +14,8 @@ STAINIT
             
             LEA.L   STATES,A0               ; A0 = STATES LIST
             MOVE.L  SNUMMENU*4(A0),STATE    ; STATE = STAMENU
+            LEA.L   DSTATES,A0              ; A0 = STATES LIST
+            MOVE.L  GNUMMENU*4(A0),DSTATE   ; STATE = STAMENU
             
             JSR SOUNDINIT                   ; STARTS SOUND MANAGER
 
@@ -30,8 +32,6 @@ STAMENU
             
             MOVEM.L D0-D1/A0,-(A7)
             
-            JSR     DRAWMENU                ; DRAWS THE MENU PLOT
-            
             ; IF "SPACE" IS PRESSED
             
             BTST.B  #KBDBITF1,KBDEDGE
@@ -41,7 +41,7 @@ STAMENU
             MOVE.L  SNUMNEW*4(A0),STATE     ; STATE = STANEW
             
             MOVE.B  #NSELECT,D1                   
-            ;JSR     SOUNDPLAY               ; PLAY SELECTION SOUND
+            JSR     SOUNDPLAY               ; PLAY SELECTION SOUND
             BRA     .END
             
             ; IF "P" IS PRESSED
@@ -68,6 +68,9 @@ STANEW
             
             MOVEM.L D1/A0,-(A7)
             
+            LEA.L   DSTATES,A0              ; A0 = STATES LIST
+            MOVE.L  GNUMGAME*4(A0),DSTATE   ; STATE = STAMENU
+            
             JSR     INITTETRIS              ; INITALICES TETRIS             
             
             JSR     INITTETROMINO           ; NEW TETROMINO
@@ -89,35 +92,12 @@ STAPLAY
 ; MODIFIES - STATE
 ; -----------------------------------------------------------------------------
             
-            MOVEM.L D1/A0,-(A7)
-            
-            JSR     DRAWGAME                ; DRAWS THE GAME PLOT
-            
-            ; CHECKS IF THE TETROMINO CAN BE MOVED DOWNWARDS
-            
-            BTST.B  #TESTBIT0,TETROLDW                        
-            BEQ     .LEFT
-            
-            MOVE.B  #NFALL,D1
-            JSR     SOUNDPLAY               ; PLAY DROP SOUND
-            
-            ; CHECKS IF IT HAS BEEN FILED ANY ROW AND CLEARS IT
-            
-            JSR     ISTETRIS
-            
-            ; CHECKS IF IT HAS BEEN GAME OVER
-            
-            JSR     ISGAMEOVER
-            BTST.B  #TESTBIT0,GAMEOVER
-            BNE     .GAMEOVER
-            
-            ; CREATES A NEW TETROMINO
-            
-            JSR     INITTETROMINO
+            MOVEM.L D0-D1/A0,-(A7)
+            CLR.B   D0
             
             ; ACTIONS IF ANY KEY IS PRESED
             
-.LEFT       BTST.B  #KBDBITLF,KBDEDGE
+            BTST.B  #KBDBITLF,KBDEDGE
             BEQ     .RIGHT
             JSR     LEFTTETROMINO
             
@@ -136,26 +116,50 @@ STAPLAY
 .SPACE      BTST.B  #KBDBITF1,KBDEDGE
             BEQ     .TEMPMOVE
             JSR     DOWNTETROMINO
-            BTST.B  #TESTBIT0,TETROLDW      ; LOOP UNTIL REACHED A STOP STATUS                
+            BTST.L  #0,D0      ; LOOP UNTIL REACHED A STOP STATUS                
             BEQ     .SPACE
             
             ; MOVE FIGURE DOWN EACH 30 SEC APROX
             
-.TEMPMOVE   MOVE.B  SCRCYCCT,D0
-            ANDI.B  #%00001111,D0
-            BNE     .END
+.TEMPMOVE   MOVE.B  SCRCYCCT,D1
+            ANDI.B  #TIMERF,D1
+            BNE     .CHECK
             JSR     DOWNTETROMINO
+            
+            ; CHECKS IF THE TETROMINO CAN BE MOVED DOWNWARDS
+            
+.CHECK      BTST.L  #0,D0                        
+            BEQ     .END
+            
+            MOVE.B  #NFALL,D1
+            JSR     SOUNDPLAY               ; PLAY DROP SOUND
+            
+            ; CHECKS IF IT HAS BEEN FILED ANY ROW AND CLEARS IT
+            
+            JSR     ISTETRIS
+            
+            ; CHECKS IF IT HAS BEEN GAME OVER
+            
+            JSR     ISGAMEOVER
+            BTST.L  #0,D0
+            BNE     .GAMEOVER
+            
+            ; CREATES A NEW TETROMINO
+            
+            JSR     INITTETROMINO
             BRA     .END
-
+            
             ; IF IS A GAME OVER
             
 .GAMEOVER   LEA.L   STATES,A0               ; A0 = STATE LIST
             MOVE.L  SNUMOVER*4(A0),STATE    ; STATE = STAOVER
+            LEA.L   DSTATES,A0              ; A0 = STATES LIST
+            MOVE.L  GNUMOVER*4(A0),DSTATE   ; STATE = STAMENU
             
             MOVE.B  #NOVER,D1
             JSR     SOUNDPLAY               ; PLAY GAME OVER SOUND
             
-.END        MOVEM.L (A7)+,D1/A0
+.END        MOVEM.L (A7)+,D0-D1/A0
             RTS
             
 ; -----------------------------------------------------------------------------
@@ -168,19 +172,29 @@ STAOVER
             
             MOVEM.L D1/A0,-(A7)
             
-            JSR     DRAWGAMEOVER            ; DRAWS THE GAME OVER PLOT
-            
             BTST.B  #KBDBITF1,KBDEDGE       ; IF "SPACE" IS PRESED
             BEQ     .END
             
             LEA.L   STATES,A0               ; A0 = STATES LIST
             MOVE.L  SNUMMENU*4(A0),STATE    ; STATE = MENU STATE
+            LEA.L   DSTATES,A0              ; A0 = STATES LIST
+            MOVE.L  GNUMMENU*4(A0),DSTATE   ; STATE = STAMENU
             
             MOVE.B  #NSELECT,D1
             JSR     SOUNDPLAY               ; PLAY SELECTION SOUND
             
 .END        MOVEM.L (A7)+,D1/A0
             RTS
+
+
+
+
+
+
+
+
+
+
 
 
 

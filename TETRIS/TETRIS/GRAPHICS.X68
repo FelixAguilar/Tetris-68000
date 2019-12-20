@@ -19,7 +19,7 @@ DRAWMENU
             CLR.L   D1                      ; D1 = BLACK
             JSR     CHFILLCL
             MOVE.B  #93,D0
-            MOVE.B  #5,D1                   ; D1 = WITH 5 PIXELS
+            MOVE.B  #PENWHITH,D1            ; D1 = WITH 5 PIXELS
             TRAP    #15
             
             ; GET STARTING COLOR FOR TITLE AND UDATE IT
@@ -33,7 +33,7 @@ DRAWMENU
             ADDQ.W  #1,D5                   ; ADD 1 TO INDEX
             DIVU.W  #7,D5                   ; STOPS FROM GOING OUT OF THE ARRAY
             SWAP.W  D5                      ; GETS THE REMAINDER
-            ANDI.L  #$0000FFFF,D5           ; CLEARS HIGER WORD      
+            ANDI.L  #$0000FFFF,D5           ; CLEARS HIGHER WORD      
             MOVE.W  D5,TITLECOL             ; SAVES IT TO MEMORY
 .SKIP       MULU.W  #4,D5                   ; D5 = LONG WORD POINTER
             
@@ -284,9 +284,6 @@ DRAWGAME
             CMP     #(MROW-4)*MCOLUMN,D0    ; CHECKS IF END OF MATRIX
             BNE     .LOOP3
             
-            MOVE.B  #87,D0                  
-            TRAP    #15                     ; DRAW SQUARE
-            
             MOVEM.L (A7)+,D0-D5/A0-A1
             RTS
 
@@ -436,6 +433,9 @@ CHFILLCL
             TRAP    #15
             MOVE.L  (A7)+,D0
             RTS
+
+
+
 
 
 

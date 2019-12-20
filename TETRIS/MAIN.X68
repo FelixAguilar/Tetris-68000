@@ -39,6 +39,9 @@ START       JSR     SYSINIT
 
 ; --- PLOT --------------------------------------------------------------------
          
+            MOVE.L  DSTATE,A1               ; A1 = CURRENT DRAW RUTINE
+            JSR     (A1)                    ; JUMPS TO CURRENT DRAW RUTINE
+         
             TRAP    #SCRTRAP                ; SHOW GRAPHICS
             BRA     .LOOP
             SIMHALT
@@ -49,6 +52,10 @@ START       JSR     SYSINIT
             INCLUDE "TETRIS/VAR.X68"        ; SYSTEM VARUABLES
             
             END    START
+
+
+
+
 
 
 

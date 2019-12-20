@@ -4,32 +4,32 @@
 
 ; -----------------------------------------------------------------------------
 INITTETROMINO
-; ADDS A NEW TETROMINO 3X3 IN THE HIDEN ZONE OF THE MATRIX
+; ADDS A NEW TETROMINO IN THE HIDEN ZONE OF THE MATRIX
 ; INPUT    - NONE
-; OUTPUT   - ALL TETROMINO VARIABLES
-; MODIFIES - MATRIX
+; OUTPUT   - NONE
+; MODIFIES - MATRIX,TETROLDW,TETROLRG,TETROROT,TETROMUL,TETROACT,RANDOM,
+;            TETRONXT,TETROPOS
 ; -----------------------------------------------------------------------------
             
             MOVEM.L D0-D1/A0,-(A7)
             
             ; CLEAR VARIABLES
             
-            CLR.B   TETROLDW                ; LIMIT DOWN
-            CLR.B   TETROLRG                ; LIMIT RIGHT
-            CLR.B   TETROLLF                ; LIMIT LEFT
-            CLR.B   TETROROT                ; ROTATION
+            CLR.B   TETROROT
             CLR.L   D0
             CLR.L   D1
             
-            ; UPDATE TETROMINO
+            ; LIST POINTERS
             
             LEA.L   RANDLIST,A1
-            LEA.L   TETROLNK,A0             ; A0 = NEXT TETROMINO ARRAY
+            LEA.L   TETROLNK,A0
+            
+            ; UPDATE TETROMINO AND NEXT
 
-            MOVE.B  TETRONXT,D0             ; D0 = NEXT TETROMINO
+            MOVE.B  TETRONXT,D0
             MOVE.B  D0,TETROMUL
             MULU.W  #4,D0
-            MOVE.L  (A0,D0),TETROACT        ; UPDATES TETROACT WITH NEXT
+            MOVE.L  (A0,D0),TETROACT
             
             ADDQ.B  #1,RANDOM
             CMP.B   #MAXRAND,RANDOM
@@ -41,167 +41,179 @@ INITTETROMINO
                     
             ; SETS STARTING POINT FOR TETROMINO
             
-            MOVE.B  #MCOLUMN-6,TETROPOS     ; STARTING POSITION
+            MOVE.B  #RESPAWN,TETROPOS
             
             ; ADDS THE NEW TETROMINO INTO MATRIX
             
-            JSR     ADDTETROMINO            ; ADDS THE NEW TETROMINO
+            JSR     ADDTETROMINO 
             
             MOVEM.L (A7)+,D0-D1/A0
             RTS
 
 ; -----------------------------------------------------------------------------
 DOWNTETROMINO
-; MOVES DOWN BY ONE ROW THE CURRENT TETROMINO IN THE MATRIX
+; MOVES THE CURRENT TETROMINO DOWN BY ONE ROW IN THE MATRIX
 ; INPUT    - NONE
-; OUTPUT   - TETROPOS, TETROLDW
-; MODIFIES - MATRIX
+; OUTPUT   - D0 = NOT ABLE TO MOVE DOWN
+; MODIFIES - MATRIX,TETROPOS
 ; -----------------------------------------------------------------------------
 
-            MOVEM.L D0-D4/A0-A2,-(A7)
-            CLR.L   D0
-            CLR.L   D1
-            CLR.L   D4
+            MOVEM.L D1-D4/A0-A2,-(A7)
             
-            ; CLEAR TETROMINO FROM MATRIX
+            ; CLEAR REGISTERS AND TETROMINO FROM MATRIX
             
             JSR     CLRTETROMINO
+            CLR.L   D0
+            CLR.L   D1
+            CLR.L   D4 
             
-            ; GETS THE TETROMINO AND MATRIX VALUES
+            ; LIST POINTERS
 
-            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
-            MOVEA.L TETROACT,A1             ; A1 = TETROMINO STRUCTURE MATRIX
-            LEA.L   MULS,A2                 ; A2 = MULTIPLIER LIST
+            LEA.L   HMATRIX,A0
+            MOVEA.L TETROACT,A1
+            LEA.L   MULS,A2
+            
+            ; TETROMINO INFORMATION
 .
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX TETROMINO
-            MOVE.B  TETROROT,D1             ; D1 = ROTATION INDEX TETROMINO
+            MOVE.B  TETROPOS,D0
+            MOVE.B  TETROROT,D1
+            MOVE.B  TETROMUL,D4
             
-            ADD.B   #MCOLUMN,D0             ; D0 = INDEX TETROMINO 1 ROW LOWER
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
             
-            MOVE.B  TETROMUL,D4             
-            MOVE.B  (A2,D4),D4              ; D4 = MATRIX SIDE
+            ADD.B   #MCOLUMN,D0          
+            MOVE.B  (A2,D4),D4
             MULU.W  D4,D1
-            MULU.W  D4,D1                   ; D1 = TETROMINO MATRIX TO USE
+            MULU.W  D4,D1
             
-            ; CHECKS IF THE TETROMINO CAN GO DOWN 1 ROW
+            ; LOOP COUNTERS
             
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
             
-.LOOP       BTST.B  #0,(A1,D1)              ; CHECK IF TETROMINO MATRIX IS FILL
-            BEQ     .SKIP                   ; IF FALSE SKIP
-            BTST.B  #0,(A0,D0)              ; CHECK IF BELOW MATRIX IS FILLED
-            BEQ     .SKIP                   ; IF FALSE SKIP
-            MOVE.B  #1,TETROLDW             ; IF TRUE UPDATES LDOW AND EXITS
+            ; CHECK IF THE TETROMINO CAN GO DOWN BY ONE ROW
+            
+.LOOP       BTST.B  #0,(A1,D1)
+            BEQ     .SKIP
+            BTST.B  #0,(A0,D0)
+            BEQ     .SKIP
+            MOVE.B  #1,D0
             BRA     .EXIT
-.SKIP       ADDQ.B  #1,D1                   ; NEXT CELL FOR TETROMINO
-            ADDQ.B  #1,D0                   ; NEXT CELL FOR MATRIX
+.SKIP       ADDQ.B  #1,D1
+            ADDQ.B  #1,D0
             DBRA    D2,.LOOP
             ADD.B   #MCOLUMN,D0             
-            SUB.B   D4,D0                   ; MOVE BY 1 ROW THE MATRIX POINTER                   
+            SUB.B   D4,D0                   
             MOVE.W  D4,D2                   
-            SUBQ.W  #1,D2                   ; RESTART LOOP COUNTER D2
+            SUBQ.W  #1,D2
             DBRA    D3,.LOOP
             
-            ; UPDATES MATRIX AND POSITION
+            ; UPDATES MATRIX AND POSITION IF IT CAN
             
-            ADD.B   #MCOLUMN,TETROPOS       ; UPDATES TETROMINO POSITION
-            
-.EXIT       JSR     ADDTETROMINO            ; ADDS NEW TETROMINO
-            MOVEM.L (A7)+,D0-D4/A0-A2           
+            ADD.B   #MCOLUMN,TETROPOS
+            MOVE.B  #0,D0
+.EXIT       JSR     ADDTETROMINO
+            MOVEM.L (A7)+,D1-D4/A0-A2           
             RTS
 
 ; -----------------------------------------------------------------------------
 LEFTTETROMINO
-; MOVES TO THE LEFT THE CURRENT TETROMINO
+; MOVES THE CURRENT TETROMINO TO THE LEFT
 ; INPUT    - NONE
-; OUTPUT   - TETROPOS
-; MODIFIES - MATRIX
+; OUTPUT   - D1 = LIMIT TO THE LEFT
+; MODIFIES - MATRIX,TETROPOS
 ; -----------------------------------------------------------------------------
           
-            MOVEM.L D0-D6/A0-A2,-(A7)
+            MOVEM.L D0/D2-D6/A0-A2,-(A7)
             
+            ; CLEAR REGISTERS AND TETROMINO FORM MATRIX
+
             CLR.L   D0
             CLR.L   D1
-
-            ; CLEAR TETROMINO FROM MATRIX
-
+            CLR.L   D4
             JSR     CLRTETROMINO
             
-            ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
+            ; LIST POINTERS
             
-            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
-            MOVEA.L TETROACT,A1             ; A1 = TETROMINO STRUCTURE MATRIX   
-            LEA.L   MULS,A2                 ; A2 = MULTIPLIER LIST
+            LEA.L   HMATRIX,A0
+            MOVEA.L TETROACT,A1
+            LEA.L   MULS,A2
+
+            ; TETROMINO INFORMATION
          
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX IN MATRIX
-            MOVE.B  TETROROT,D1             ; D1 = ROTATION INDEX
+            MOVE.B  TETROPOS,D0
+            MOVE.B  TETROROT,D1            
+            MOVE.B  TETROMUL,D4
+             
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
             
-            MOVE.B  TETROMUL,D4             
-            MOVE.B  (A2,D4),D4              ; D4 = MATRIX SIDE
-            
+            MOVE.B  (A2,D4),D4
             MULU.W  D4,D1
-            MULU.W  D4,D1                   ; D1 = TETROMINO MATRIX TO USE
+            MULU.W  D4,D1
             
-            ; CHECKS IF THERE IS A WALL TO THE LEFT
+            ; LOOP COUNTERS
             
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
             
-.LOOP1      BTST.B  #0,(A1,D1)              ; CHECKS IF THERE IS LEFT CONTENT
-            BEQ     .SKIP1                  ; IF NOT SKIP
-            DIVU.W  #MCOLUMN,D0             ; DIVIDE CURRENT POS WITH COLUMNS
-            SWAP.W  D0                      ; GETS THE REMANIDER
-            TST.W   D0                      ; CHECKS IF IT IS 0
-            BEQ     .EXIT                   ; IF TRUE THEN EXIT
-            BRA     .NEXT                   ; ELSE PROCEED NEXT VERIFICATION
-.SKIP1      ADD.B   D4,D1                   ; MOVES TO NEXT ROW IN TETROMINO
-            ADD.B   #MCOLUMN,D0             ; MOVES TO NEXT ROW IN MATRIX
-            DBRA    D2,.LOOP1
+            ; CHECK IF THERE IS A WALL TO THE LEFT
             
+.LOOP1      BTST.B  #0,(A1,D1)
+            BEQ     .SKIP1
+            DIVU.W  #MCOLUMN,D0
+            SWAP.W  D0
+            TST.W   D0
+            BNE     .NEXT
+            MOVE.B  #1,D1
+            BRA     .EXIT
+.SKIP1      ADD.B   D4,D1
+            ADD.B   #MCOLUMN,D0
+            DBRA    D2,.LOOP1
             MOVE.W  D4,D5
             SUBQ.W  #1,D5
             MULU.W  D4,D5
             SUBQ.W  #1,D5
-            SUB.B   D5,D1                   ; MOVES TO NEXT COLUMN IN TETROMINO
-            
+            SUB.B   D5,D1
             MOVE.W  #MCOLUMN,D6
             MOVE.W  D4,D5
             SUBQ.W  #1,D5
             MULU.W  D5,D6
             SUBQ.W  #1,D6
-            SUB.B   D6,D0                   ; MOVES TO NEXT COLUMN IN MATRIX
-            
-            
+            SUB.B   D6,D0            
             MOVE.W  D4,D2 
             SUBQ.W  #1,D2
             DBRA    D3,.LOOP1                   
             
-            ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
+            ; TETROMINO INFORMATION
             
-.NEXT       MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX IN MATRIX
-            MOVE.B  TETROROT,D1             ; D1 = ROTATION INDEX
+.NEXT       MOVE.B  TETROPOS,D0
+            MOVE.B  TETROROT,D1
             
-            MULU.W  D4,D1                   ; D1 = TETROMINOS MATRIX TO USE
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
+            
             MULU.W  D4,D1
+            MULU.W  D4,D1
+            SUBQ.B  #1,D0
             
-            SUBQ.B  #1,D0                   ; D0 = INDEX TETROMINO 1 COL LOWER
-            
-            ; CHECK IF THERE IS AN OBSTACLE TO THE LEFT
+            ; LOOP COUNTERS
   
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
+
+            ; CHECK IF THERE IS A FILLED CELL TO THE LEFT
 
 .LOOP2      BTST.B  #0,(A1,D1)
             BEQ     .SKIP2
             BTST.B  #0,(A0,D0)
-            BNE     .EXIT      
+            BEQ     .SKIP2
+            MOVE.B  #1,D1
+            BRA     .EXIT      
 .SKIP2      ADDQ.B  #1,D1
             ADDQ.B  #1,D0
             DBRA    D2,.LOOP2
@@ -213,111 +225,118 @@ LEFTTETROMINO
             
             ; UPDATES MATRIX AND POSITION
             
-            SUBQ.B  #1,TETROPOS             ; UPDATES TETROMINO POSITION
-.EXIT       JSR     ADDTETROMINO            ; ADD NEW TETROMINO
+            SUBQ.B  #1,TETROPOS
+            MOVE.B  #0,D1
+.EXIT       JSR     ADDTETROMINO
              
-            MOVEM.L (A7)+,D0-D6/A0-A2           
+            MOVEM.L (A7)+,D0/D2-D6/A0-A2           
             RTS
 
             
 ; -----------------------------------------------------------------------------
 RIGHTTETROMINO
-; CHECKS IF CAN GO FUTHER DOWN
+; MOVES THE CURRENT TETROMINO TO THE RIGHT
 ; INPUT    - NONE
-; OUTPUT   - NONE
-; MODIFIES - NONE
+; OUTPUT   - D2.B = LIMIT TO THE RIGHT
+; MODIFIES - MATRIX,TETROPOS
 ; -----------------------------------------------------------------------------
    
-            MOVEM.L D0-D6/A0-A2,-(A7)
+            MOVEM.L D0-D1/D3-D6/A0-A2,-(A7)
+            
+            ; CLEAR REGISTERS AND TETROMINO FROM MATRIX
+            
             CLR.L   D0
             CLR.L   D1
+            CLR.L   D4
+            JSR     CLRTETROMINO
 
-            ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
+            ; LIST POINTERS
             
-            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
-            MOVEA.L TETROACT,A1             ; A1 = TETROMINO STRUCTURE MATRIX   
+            LEA.L   HMATRIX,A0
+            MOVEA.L TETROACT,A1   
             LEA.L   MULS,A2
          
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX IN MATRIX
-            MOVE.B  TETROROT,D1             ; D1 = ROTATION INDEX
+            ; TETROMINO INFORMATION
+                     
+            MOVE.B  TETROPOS,D0
+            MOVE.B  TETROROT,D1
+            MOVE.B  TETROMUL,D4
             
-            MOVE.B  TETROMUL,D4             ; D4 = MATRIX SIZE
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
+            
             MOVE.B  (A2,D4),D4
-            
             MULU.W  D4,D1
-            MULU.W  D4,D1                   ; D1 = TETROMINOS MATRIX TO USE
-            
+            MULU.W  D4,D1
             MOVE.B  D4,D5
             MULU.W  D4,D5                   
             SUBQ.B  #1,D5
-            ADD.B   D5,D1                   ; D1 = TETROMINO LOWEST CELL
-            
+            ADD.B   D5,D1
             MOVE.B  D4,D5
             SUBQ.B  #1,D5
             MULU.W  #MCOLUMN,D5
             ADD.B   D4,D5
             SUBQ.B  #1,D5
-            ADD.B   D5,D0                   ; D0 = LOWER RIGHT CELL
+            ADD.B   D5,D0
             
-            ; CHECKS IF THERE IS A WALL TO THE LEFT
-            
-            JSR     CLRTETROMINO            ; CLEAR CURRENT TETROMINO
+            ; LOOP COUNTER
           
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
             
-.LOOP1      BTST.B  #0,(A1,D1)              ; CHECKS IF THERE IS RIGHT CONTENT
-            BEQ     .SKIP1                  ; IF NOT SKIP
-            DIVU.W  #MCOLUMN,D0             ; DIVIDE CURRENT POS WITH COLUMNS
-            SWAP.W  D0                      ; GETS THE REMANIDER
-            CMP.W   #MCOLUMN-1,D0           ; CHECKS IF IT IS 0
-            BEQ     .EXIT                   ; IF TRUE THEN EXIT
-            BRA     .NEXT                   ; ELSE PROCEED NEXT VERIFICATION
-.SKIP1      SUB.B  D4,D1                   ; MOVES TO NEXT ROW IN TETROMINO
-            SUB.B   #MCOLUMN,D0             ; MOVES TO NEXT ROW IN MATRIX
-            DBRA    D2,.LOOP1
+            ; CHECK IF THERE IS A WALL TO THE RIGHT
             
+.LOOP1      BTST.B  #0,(A1,D1)
+            BEQ     .SKIP1
+            DIVU.W  #MCOLUMN,D0
+            SWAP.W  D0
+            CMP.W   #MCOLUMN-1,D0
+            BNE     .NEXT
+            MOVE.B  #1,D2
+            BRA     .EXIT
+.SKIP1      SUB.B   D4,D1
+            SUB.B   #MCOLUMN,D0
+            DBRA    D2,.LOOP1
             MOVE.W  D4,D5
             SUBQ.W  #1,D5
             MULU.W  D4,D5
             SUBQ.W  #1,D5
-            ADD.B   D5,D1                   ; MOVES TO NEXT COLUMN IN TETROMINO
-            
+            ADD.B   D5,D1 
             MOVE.W  #MCOLUMN,D6
             MOVE.W  D4,D5
             SUBQ.W  #1,D5
             MULU.W  D5,D6
             SUBQ.W  #1,D6
-            ADD.B   D6,D0                   ; MOVES TO NEXT COLUMN IN MATRIX
-
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            ADD.B   D6,D0
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-
             DBRA    D3,.LOOP1                   
             
-            ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
+            ; TETROMINO INFORMATION
             
-.NEXT       MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX IN MATRIX
-            MOVE.B  TETROROT,D1             ; D1 = ROTATION INDEX
+.NEXT       MOVE.B  TETROPOS,D0
+            MOVE.B  TETROROT,D1
             
-            MULU.W  D4,D1                   ; D1 = TETROMINOS MATRIX TO USE
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
+
             MULU.W  D4,D1
+            MULU.W  D4,D1
+            ADDQ.B  #1,D0
             
-            ADDQ.B  #1,D0                   ; D0 = INDEX TETROMINO 1 COL LOWER
-            
-            ; CHECK IF THERE IS AN OBSTACLE TO THE LEFT
+            ; LOOP COUNTERS
   
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
 
 .LOOP2      BTST.B  #0,(A1,D1)
             BEQ     .SKIP2
             BTST.B  #0,(A0,D0)
-            BNE     .EXIT      
+            BEQ     .SKIP2
+            MOVE.B  #1,D2
+            BRA     .EXIT      
 .SKIP2      ADDQ.B  #1,D1
             ADDQ.B  #1,D0
             DBRA    D2,.LOOP2
@@ -329,11 +348,11 @@ RIGHTTETROMINO
             
             ; UPDATES MATRIX AND POSITION
             
-            
-            ADDQ.B  #1,TETROPOS             ; UPDATES TETROMINO POSITION
-.EXIT       JSR     ADDTETROMINO            ; ADD NEW TETROMINO
+            ADDQ.B  #1,TETROPOS
+            MOVE.B  #0,D2
+.EXIT       JSR     ADDTETROMINO
              
-            MOVEM.L (A7)+,D0-D6/A0-A2           
+            MOVEM.L (A7)+,D0-D1/D3-D6/A0-A2           
             RTS
  
 ; -----------------------------------------------------------------------------
@@ -341,49 +360,52 @@ ROTATETETROMINO
 ; IT DOES NOT REQUIRED TO ROTATE
 ; INPUT    - NONE
 ; OUTPUT   - NONE
-; MODIFIES - NONE
+; MODIFIES - MATRIX,TETROPOS
 ; -----------------------------------------------------------------------------
             
             MOVEM.L D0-D7/A0-A2,-(A7)
+            
+            ; CLEAR REGISTERS AND TETROMINO FROM MATRIX
+            
             CLR.L   D0
             CLR.L   D1
             CLR.L   D4
-            
-            ; CLEAR TETROMINO FROM MATRIX
-            
             JSR     CLRTETROMINO
             
-            ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
+            ; LIST POINTERS
             
-            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
-            MOVEA.L TETROACT,A1             ; A1 = TETROMINO STRUCTURE MATRIX
+            LEA.L   HMATRIX,A0
+            MOVEA.L TETROACT,A1
             LEA.L   MULS,A2
-         
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX IN MATRIX
-            MOVE.B  TETROROT,D1             ; D1 = ROTATION INDEX
             
-            MOVE.B  TETROMUL,D4             ; D4 = MATRIX SIZE
+            ; TETROMINO INFORMATION
+         
+            MOVE.B  TETROPOS,D0
+            MOVE.B  TETROROT,D1
+            MOVE.B  TETROMUL,D4
+            
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
+            
             MOVE.B  (A2,D4),D4
-
             ADDQ.B  #1,D1
             DIVU.W  #4,D1
             SWAP.W  D1
-            ANDI.L  #$000000FF,D1           ; D1 = NEXT ROTATION FOR TETROMINO
-            MOVE.L  D1,D5                   ; D2 = COPY OF D1
-            
+            ANDI.L  #$000000FF,D1
+            MOVE.L  D1,D5
             MULU.W  D4,D1
-            MULU.W  D4,D1                   ; D1 = TETROMINOS MATRIX TO USE
-           
+            MULU.W  D4,D1
             MOVE.W  D4,D6
             SUBQ.W  #2,D6
             MOVE.W  #MCOLUMN,D3
             SUB.W   D6,D3
             SUBQ.W  #1,D6
            
-            ; CHECKS IF COLIDES WITH A WALL
+            ; LOOP COUNTER
             
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
+            
+            ; CHECK IF COLIDES WITH A WALL AND CORRECTS IT BY MOVING IT
             
 .LOOP1      MOVE.L  D0,D7
             BTST.B  #0,(A1,D1)
@@ -392,8 +414,8 @@ ROTATETETROMINO
             SWAP.W  D0
             CMP.W   D3,D0
             BHS     .EXIT
-            MOVE.L  D7,D0
-.SKIP1      ADD.B   D4,D1
+.SKIP1      MOVE.L  D7,D0
+            ADD.B   D4,D1
             SUBQ.B  #1,D1
             ADD.B   D4,D0
             SUBQ.B  #1,D0
@@ -402,26 +424,27 @@ ROTATETETROMINO
             DIVU.W  #MCOLUMN,D0
             SWAP.W  D0
             CMP.W   D6,D0
-            BLS     .EXIT            
+            BLS     .EXIT
 .SKIP2      MOVE.L  D7,D0
             ADDQ.B  #1,D1
             ADD.B   #MCOLUMN,D0
             DBRA    D2,.LOOP1
             
-            ; GETS THE TETROMINO VALUES AND PRERATES THEM FOR FIRST CHECK
+            ; TETROMINO INFORMATION
             
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX IN MATRIX
-            MOVE.B  D5,D1                   ; D1 = ROTATION INDEX
-            
+            MOVE.B  TETROPOS,D0
+            MOVE.B  D5,D1
             MULU.W  D4,D1
-            MULU.W  D4,D1                   ; D1 = TETROMINOS MATRIX TO USE
+            MULU.W  D4,D1
             
-            ; CHECKS IF IN THE NEW ROTATION COLIDES WITH ANY OBJECT
+            ; LOOP COUNTER
                       
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
+            
+            ; CHECK IF IT WILL COLIDE WITH A FILLED CELL
             
 .LOOP2      BTST.B  #0,(A1,D1)
             BEQ     .SKIP3
@@ -439,7 +462,6 @@ ROTATETETROMINO
             ; CHANGES TO NEW ROTATION
             
             MOVE.B  D5,TETROROT
-            
 .EXIT       JSR     ADDTETROMINO
 
             MOVEM.L (A7)+,D0-D7/A0-A2            
@@ -450,43 +472,55 @@ ADDTETROMINO
 ; INSERTS CURRENT TETROMINO INTO MATRIX
 ; INPUT    - NONE
 ; OUTPUT   - NONE
-; MODIFIES - NONE
+; MODIFIES - MATRIX
 ; -----------------------------------------------------------------------------
             
             MOVEM.L D0-D4/A0-A2,-(A7)
+            
+            ; CLEAR REGISTERS
             
             CLR.L   D0
             CLR.L   D1
             CLR.L   D4
             
-            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
-            MOVEA.L TETROACT,A1             ; A1 = TETROMINO STRUCTURE MATRIX
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX TETROMINO 
-            MOVE.B  TETROROT,D1             ; D1 = CURRENT ROTATION TETROMINO
+            ; LIST POINTERS
             
+            LEA.L   HMATRIX,A0
+            MOVEA.L TETROACT,A1
             LEA.L   MULS,A2
-            MOVE.B  TETROMUL,D4             ; D4 = MATRIX SIZE
-            MOVE.B  (A2,D4),D4
             
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            ; TETROMINO INFORMATION
+            
+            MOVE.B  TETROPOS,D0 
+            MOVE.B  TETROROT,D1
+            MOVE.B  TETROMUL,D4
+            
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
+            
+            MOVE.B  (A2,D4),D4
+            MULU.W  D4,D1
+            MULU.W  D4,D1
+            
+            ; LOOP COUNTERS
+            
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
             
-            MULU.W  D4,D1
-            MULU.W  D4,D1
+            ; ADDS TETROMINO INTO THE MATRIX
             
-.LOOP3      BTST.B  #0,(A1,D1)
-            BEQ     .SKIP4
+.LOOP       BTST.B  #0,(A1,D1)
+            BEQ     .SKIP
             MOVE.B  (A1,D1),(A0,D0)
-.SKIP4      ADDQ.B  #1,D1
+.SKIP       ADDQ.B  #1,D1
             ADDQ.B  #1,D0
-            DBRA    D2,.LOOP3
+            DBRA    D2,.LOOP
             ADD.B   #MCOLUMN,D0
             SUB.B   D4,D0
             MOVE.W  D4,D2                   
             SUBQ.W  #1,D2
-            DBRA    D3,.LOOP3
+            DBRA    D3,.LOOP
              
             MOVEM.L (A7)+,D0-D4/A0-A2
             RTS
@@ -496,66 +530,58 @@ CLRTETROMINO
 ; CLEAR CURRENT TETROMINO FROM THE MATRIX
 ; INPUT    - NONE
 ; OUTPUT   - NONE
-; MODIFIES - NONE
+; MODIFIES - MATRIX
 ; -----------------------------------------------------------------------------
             
             MOVEM.L D0-D4/A0-A2,-(A7)
+            
+            ; CLEAR REGISTERS
             
             CLR.L   D0
             CLR.L   D1
             CLR.L   D4
             
-            LEA.L   HMATRIX,A0              ; A0 = MATRIX STATING POINT
-            MOVEA.L TETROACT,A1             ; A1 = TETROMINO STRUCTURE MATRIX
-            MOVE.B  TETROPOS,D0             ; D0 = POSITION INDEX TETROMINO 
-            MOVE.B  TETROROT,D1             ; D1 = CURRENT ROTATION TETROMINO
+            ; LIST POINTERS
             
+            LEA.L   HMATRIX,A0
+            MOVEA.L TETROACT,A1
             LEA.L   MULS,A2
-            MOVE.B  TETROMUL,D4             ; D4 = MATRIX SIZE
-            MOVE.B  (A2,D4),D4
             
-            MOVE.W  D4,D2                   ; D2 = COL INDEX FOR TETROMINO
+            ; TETROMINO INFORMATION
+            
+            MOVE.B  TETROPOS,D0 
+            MOVE.B  TETROROT,D1
+            MOVE.B  TETROMUL,D4
+            
+            ; PROCESS THE INFORMATION FOR THE ACTION TO EXECUTE
+            
+            MOVE.B  (A2,D4),D4
+            MULU.W  D4,D1
+            MULU.W  D4,D1
+            
+            ; LOOP COUNTERS
+            
+            MOVE.W  D4,D2
             SUBQ.W  #1,D2
-            MOVE.W  D4,D3                   ; D3 = ROW INDEX FOR TETROMINO
+            MOVE.W  D4,D3
             SUBQ.W  #1,D3
             
-            MULU.W  D4,D1
-            MULU.W  D4,D1
+            ; CLEARS TETROMINO INTO THE MATRIX
             
-.LOOP3      BTST.B  #0,(A1,D1)
-            BEQ     .SKIP4
+.LOOP       BTST.B  #0,(A1,D1)
+            BEQ     .SKIP
             CLR.B   (A0,D0)
-.SKIP4      ADDQ.B  #1,D1
+.SKIP       ADDQ.B  #1,D1
             ADDQ.B  #1,D0
-            DBRA    D2,.LOOP3
+            DBRA    D2,.LOOP
             ADD.B   #MCOLUMN,D0
             SUB.B   D4,D0
             MOVE.W  D4,D2                   
             SUBQ.W  #1,D2
-            DBRA    D3,.LOOP3
+            DBRA    D3,.LOOP
              
             MOVEM.L (A7)+,D0-D4/A0-A2
             RTS
-            
-            MOVEM.L (A7)+,D0-D3/A0-A1
-            RTS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~

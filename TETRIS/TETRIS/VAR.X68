@@ -4,13 +4,18 @@
 
 ; --- GAME STATE RELATED VARIABLES --------------------------------------------
 
-STATES      DC.L    STAINIT                 ; INITALIZE STATE   0
-            DC.L    STAMENU                 ; MAIN MENU STATE   1
-            DC.L    STANEW                  ; NEW GAME STATE    2     
-            DC.L    STAPLAY                 ; GAME UPDATE STATE 3
-            DC.L    STAOVER                 ; GAME OVER STATE   4
+STATES      DC.L    STAINIT                 ; INITALIZE STATE
+            DC.L    STAMENU                 ; MAIN MENU STATE
+            DC.L    STANEW                  ; NEW GAME STATE     
+            DC.L    STAPLAY                 ; GAME UPDATE STATE
+            DC.L    STAOVER                 ; GAME OVER STATE
+            
+DSTATES     DC.L    DRAWMENU                ; DRAW MENU
+            DC.L    DRAWGAME                ; DRAW GAME
+            DC.L    DRAWGAMEOVER            ; DRAW GAME MODE
             
 STATE       DS.L    1                       ; ACTIVE STATE
+DSTATE      DS.L    1                       ; DRAW STATE
 
 ; --- GAME SCORE RELATED VARIABLES --------------------------------------------
 
@@ -22,19 +27,15 @@ TETROACT    DS.L    1                       ; CURRENT TETROMINO
 TETROMUL    DS.B    1                       ; CURRENT TETROMINO MATRIX
 TETROROT    DS.B    1                       ; CURRENT ROTATION
 TETROPOS    DS.B    1                       ; CURRENT POSITION
-
 TETRONXT    DS.B    1                       ; NEXT TETROMINO INDEX
-
-TETROLDW    DS.B    1                       ; LIMIT DOWN
-TETROLRG    DS.B    1                       ; LIMIT RIGHT
-TETROLLF    DS.B    1                       ; LIMIT LEFT
             DS.W    0
 
 ; --- TETROMINOS RELATED VARIABLES --------------------------------------------
 
-TETROLNK    DC.L    OFORM,TFORM,LFORM,JFORM ; ADRESS TO EACH TETROMINO MATRIX
+TETROLNK    DC.L    OFORM,TFORM,LFORM,JFORM ; ADRESS TO EACH TETROMINOS MATRIX
             DC.L    SFORM,ZFORM,IFORM
-MULS        DC.B    2,3,3,3,3,3,4           ; SIZE OF EACH TETROMINO MATRIX
+            
+MULS        DC.B    2,3,3,3,3,3,4           ; SIZE OF EACH TETROMINOS MATRIX
            
 OFORM       DC.B    $31,$31,$31,$31,$31,$31 ; TETROMINO O
             DC.B    $31,$31,$31,$31,$31,$31
@@ -89,8 +90,8 @@ IFORM       DC.B    $00,$00,$01,$00,$00,$00 ; TETROMINO I
 
 ; --- MATRIX RELATED VARIABLES ------------------------------------------------
 
-HMATRIX     DS.B    MCOLUMN                 ; ALL THE HROWS WILL NOT SHOW ON  
-            DS.B    MCOLUMN                 ; THE SCREEN (HIDDEN)
+HMATRIX     DS.B    MCOLUMN                 ; ALL THE HMATRIX ROWS WILL NOT  
+            DS.B    MCOLUMN                 ; SHOW ON THE SCREEN (HIDDEN)
             DS.B    MCOLUMN                 
             DS.B    MCOLUMN                 
 MATRIX      DS.B    MCOLUMN
@@ -114,12 +115,7 @@ MATRIX      DS.B    MCOLUMN
             DS.B    MCOLUMN
             DS.B    MCOLUMN
 LIMIT       DS.B    MCOLUMN                 ; END OF MATRIX
-            
-
-; --- GAME STATUS RELATED VARIABLES -------------------------------------------
-
-GAMEOVER    DS.B    1                       ; GAMEOVER
-            
+                        
 ; --- COLOR RELATED VARIABLES -------------------------------------------------
          
 ACOLOR      DS.B    1                       ; ACTUAL COLOR
@@ -235,10 +231,10 @@ NEXTLINK    DC.L    NEXTO,NEXTT,NEXTL,NEXTJ ; TETRINOMIO TO DRAW AS NEXT
 NEXTO       DC.W    3,0,735,105,795,165     ; TETRINOMIO O                       
 NEXTT       DC.W    5,1,720,135,810,165,750 ; TETRINOMIO T
             DC.W    105,780,135
-NEXTL       DC.W    2,1,765,090,795,171,735 ; TETRINOMIO L
-            DC.W    141,765,171
-NEXTJ       DC.W    1,1,735,090,765,171,765 ; TETRINOMIO J
+NEXTL       DC.W    2,1,735,090,765,171,765 ; TETRINOMIO L
             DC.W    141,795,171
+NEXTJ       DC.W    1,1,765,090,795,171,735 ; TETRINOMIO J
+            DC.W    141,765,171
 NEXTS       DC.W    4,1,720,135,780,165,750 ; TETRINOMIO S
             DC.W    105,810,135
 NEXTZ       DC.W    6,1,720,105,780,135,750 ; TETRINOMIO Z
@@ -303,9 +299,9 @@ TEXTREST    DC.B    'PRESS "SPACE" TO RESTART THE GAME',0
             
             ; RANDOM LIST
 
-RANDOM      DS.B    1
+RANDOM      DS.B    1                       ; RANDOM INDEX IN USE
             
-RANDLIST    DC.B    5,6,1,4,0,3,2,4,3,6,1,0
+RANDLIST    DC.B    5,6,1,4,0,3,2,4,3,6,1,0 ; RANDOM NUMBER LIST
             DC.B    5,2,4,3,1,0,5,6,2,1,3,6
             DC.B    0,1,2,4,5,0,6,1,4,3,5,3
             DC.B    2,1,5,6,0,4,3,6,4,1,2,0
@@ -319,6 +315,12 @@ RANDLIST    DC.B    5,6,1,4,0,3,2,4,3,6,1,0
             DC.B    1,4,1,0,2,3,5,6
 
             DS.W    0
+
+
+
+
+
+
 
 
 
