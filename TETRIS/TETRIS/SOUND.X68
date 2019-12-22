@@ -25,7 +25,7 @@ SOUNDINIT
             ; PLAY MUSIC IN LOOP
             
             MOVE.B  #76,D0
-            MOVE.L  #NMUSIC,D2
+            MOVE.L  #1,D2
             TRAP    #15
    
 .SKIP       MOVE.B  #SOUND,D0               ; CHECKS IF SOUNDS ARE ACTIVE
@@ -87,6 +87,8 @@ SOUNDPLAY
             RTS
             
 ; -----------------------------------------------------------------------------
+
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~0~

@@ -87,10 +87,20 @@ IFORM       DC.B    $00,$00,$01,$00,$00,$00 ; TETROMINO I
             DC.B    $00,$00,$00,$00,$01,$01
             DC.B    $01,$01,$00,$00,$00,$00
             DC.B    $00,$00,$00,$00
+            
+; --- SOUND RELATED VARIABLES -------------------------------------------------          
+            
+MELODY      DC.B    'SOUND/MUSIC.WAV',0     ; MUSIC SOUND          1
+CLEAR       DC.B    'SOUND/CLEAR.WAV',0     ; 4 LINE CLEAR SOUND   2
+FALL        DC.B    'SOUND/FALL.WAV',0      ; FALL SOUND           3
+MGAMEOVR    DC.B    'SOUND/GAMEOVER.WAV',0  ; GAME OVER SOUND      4
+LINE        DC.B    'SOUND/LINE.WAV',0      ; LINE CLEAR SOUND     5
+SELECTION   DC.B    'SOUND/SELECTION.WAV',0 ; MENU SELECTION SOUND 6
+SUCCESS     DC.B    'SOUND/SUCCESS.WAV',0   ; NEW GAME SOUND       7
 
 ; --- MATRIX RELATED VARIABLES ------------------------------------------------
 
-HMATRIX     DS.B    MCOLUMN                 ; ALL THE HMATRIX ROWS WILL NOT  
+HMATRIX     DS.B    MCOLUMN                 ; ALL THE HMATRIX ROWS WILL NOT
             DS.B    MCOLUMN                 ; SHOW ON THE SCREEN (HIDDEN)
             DS.B    MCOLUMN                 
             DS.B    MCOLUMN                 
@@ -128,17 +138,7 @@ COLOR       DC.L    $00FFFF00               ; CIAN        0
             DC.L    $001AFF00               ; GREEN       4
             DC.L    $00FF0095               ; PURPLE      5
             DC.L    $000000FF               ; RED         6
-            
-; --- SOUND RELATED VARIABLES -------------------------------------------------          
-            
-MELODY      DC.B    'SOUND/MUSIC.WAV',0     ; MUSIC SOUND          1
-CLEAR       DC.B    'SOUND/CLEAR.WAV',0     ; 4 LINE CLEAR SOUND   2
-FALL        DC.B    'SOUND/FALL.WAV',0      ; FALL SOUND           3
-MGAMEOVR    DC.B    'SOUND/GAMEOVER.WAV',0  ; GAME OVER SOUND      4
-LINE        DC.B    'SOUND/LINE.WAV',0      ; LINE CLEAR SOUND     5
-SELECTION   DC.B    'SOUND/SELECTION.WAV',0 ; MENU SELECTION SOUND 6
-SUCCESS     DC.B    'SOUND/SUCCESS.WAV',0   ; NEW GAME SOUND       7
-            DS.W    0  
+
 
 ; --- MENU RELATED GRAPHIC VARIABLES ------------------------------------------
 
@@ -195,12 +195,12 @@ INSTXY      DC.W    300,280,300,320,300,340 ; TEXT COORDENATES (X,Y)
             DC.W    400,320,400,340,400,360
             DC.W    400,380,400,400,430,320
             DC.W    430,340,430,360,430,380
-            DC.W    430,400
+            DC.W    430,400,370,440
 
             ; INSTRUCTION TEXT
  
 INSTLINK    DC.L    INS1,INS3,INS5,INS7,INS9
-            DC.L    INS11,INS2,INS4,INS6,INS8
+            DC.L    INS11,INS4,INS6,INS8
             DC.L    INS10,INS12
            
 INS1        DC.B    'CONTROLS:',0
@@ -292,7 +292,6 @@ GMOVERY     DC.W    185,065,065,095,095,155 ; Y COORDENATE FOR GAME OVER
             ; TEXT IN GAME OVER SCREEN
             
 GMOVERXY    DC.W    370,435,370,467         ; TEXT POINTERS (X,Y)
-SHOWTEXT    DC.B    1                       ; IF HAS TO SHOW TEXTREST
 
 TEXTRESL    DC.B    'TOTAL SCORE: ',0
 TEXTREST    DC.B    'PRESS "SPACE" TO RESTART THE GAME',0
@@ -315,12 +314,6 @@ RANDLIST    DC.B    5,6,1,4,0,3,2,4,3,6,1,0 ; RANDOM NUMBER LIST
             DC.B    1,4,1,0,2,3,5,6
 
             DS.W    0
-
-
-
-
-
-
 
 
 

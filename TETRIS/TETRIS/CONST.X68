@@ -1,5 +1,5 @@
 ; =============================================================================
-; GAME CONST
+; GAME CONSTANTS
 ; =============================================================================
 
 ; --- TIMER CONSTANTS ---------------------------------------------------------
@@ -10,10 +10,11 @@ TIMERS      EQU     %00011111               ; SLOW TIMER
 ; --- SOUND RELATED CONSTANTS -------------------------------------------------
 
 ;           (0 = DISABLED, 1 = ENABLED)
-MUSIC       EQU     0                       ; MUSIC TETRIS
+MUSIC       EQU     1                       ; MUSIC TETRIS
 SOUND       EQU     0                       ; SOUNDS (ONLY IF MUSIC = 0)
 
-NCLEAR      EQU     0
+            ; MEMORY SOUND NUMBERS
+NCLEAR      EQU     0 
 NFALL       EQU     1
 NOVER       EQU     2
 NLINE       EQU     3
@@ -34,7 +35,7 @@ GNUMOVER    EQU     2
 
 ; --- GAME RELATED CONSTANTS --------------------------------------------------
 
-BASESCRE    EQU     5                       ; BASE SCORE
+BASESCRE    EQU     4                       ; BASE SCORE (2^NUMBER)
 RESPAWN     EQU     4                       ; SPAWN POINT FOR NEW TETROMINOS
 MAXRAND     EQU     140                     ; MAX RANDOM LIST NUMBER
 
@@ -49,6 +50,18 @@ PENWHITH    EQU     5                       ; WHITH OF THE PEN
 LENSQU      EQU     30                      ; SIZE IN PIXEL OF A SQUARE SIDE
 XMATRIX     EQU     350                     ; COORDENATE X FOR MATRIX IN PIXELS
 YMATRIX     EQU     50                      ; COORDENATE Y FOR MATRIX IN PIXELS
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
